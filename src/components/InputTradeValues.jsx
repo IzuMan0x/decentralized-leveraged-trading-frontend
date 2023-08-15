@@ -111,7 +111,6 @@ function InputTradeValues() {
   } = useContractWrite(marketOrderConfig);
 
   //orderClose
-
   const { config: orderCloseConfig, orderCloseError } = usePrepareContractWrite(
     {
       address: orderBookContractAddress,
@@ -130,7 +129,6 @@ function InputTradeValues() {
       },
     }
   );
-
   const {
     data: orderCloseData,
     isSuccess: orderCloseSuccess,
@@ -139,7 +137,6 @@ function InputTradeValues() {
   } = useContractWrite(orderCloseConfig);
 
   //Long and short toggle
-
   const initiateTradeHandler = (event) => {
     event.preventDefault();
     const collateral = event.target.collateral.value;
