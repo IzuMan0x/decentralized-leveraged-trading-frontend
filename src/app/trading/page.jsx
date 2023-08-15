@@ -20,6 +20,7 @@ import WalletConnectModal from "../../components/WalletConnectModal";
 import TradingViewWidget from "../../components/TradingViewWidget";
 import NavBar from "../../components/NavBar";
 import InputTradeValues from "@/components/InputTradeValues";
+import OpenTrades from "@/components/OpenTrades";
 //import { Profile } from "./Profile";
 
 /* Defining the localchain becasue the provided localchain from WAGMI has a different Id of 1337 */
@@ -63,28 +64,28 @@ const wagmiConfig = createConfig({
 
 function TradingPage() {
   return (
-    <WagmiConfig config={wagmiConfig} chains={chains}>
-      <div className="h-auto w-full">
-        <div className="bg-black bg-cover bg-repeat">
-          <WalletConnectModal config={wagmiConfig} chains={chains} />
+    <div className="h-full w-full">
+      <WagmiConfig config={wagmiConfig} chains={chains}>
+        <WalletConnectModal config={wagmiConfig} chains={chains} />
 
+        <div className="bg-black bg-repeat h-full w-full">
           <div>
             <NavBar />
           </div>
-          <div className="h-screen w-screen py-20 g">
-            <div className="h-5/6 w-4/5 flex flex-center ">
+          <div className="h-screen w-screen py-20 ">
+            <div className="h-full w-full flex px-6">
               <TradingViewWidget />
+              <div className="text-white mx-10 border-solid border-4 border-white px-6 py-3">
+                <InputTradeValues />
+              </div>
             </div>
-            <div className="flex flex-center items-center justify-right">
-              <div className="text-white">Trade parameters</div>
-            </div>
-            <div>
-              <InputTradeValues />
+            <div className="flex flex-center items-center justify-right border-solid border-4 border-white mx-10 my-5 h-10">
+              <OpenTrades />
             </div>
           </div>
         </div>
-      </div>
-    </WagmiConfig>
+      </WagmiConfig>
+    </div>
   );
 }
 

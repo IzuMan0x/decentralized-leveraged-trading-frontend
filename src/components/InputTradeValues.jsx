@@ -13,16 +13,20 @@ import { abi as orderBookAbi } from "../assets/orderbook-contract-abi.json";
 import { abi as pythnetworkAbi } from "../assets/pythnetwork-abi.json";
 import { parseEther, formatUnits } from "viem";
 
-//we
-const orderBookContractAddress = "0x18284893740928147340";
-const pythPriceFeedAddress = "0xC38B1dd611889Abc95d4E0a472A667c3671c08DE";
+//note we need to prefix the env variables with NEXT_PUBLIC to use them on the browser side
+const orderBookContractAddress =
+  process.env.NEXT_PUBLIC_ORDER_BOOK_CONTRACT_ADDRESS;
 
-//
+//const pythPriceFeedAddress = "0xC38B1dd611889Abc95d4E0a472A667c3671c08DE";
+
 function InputTradeValues() {
   const [orderType, setOrderType] = useState(0);
   const [orderArgs, setOrderArgs] = useState([]);
   const [priceFeedUpdateData, setPriceFeedUpdateData] = useState([]);
 
+  // In order to use Pyth prices in your protocol you need to submit the price update data to Pyth contract in your target
+  // chain. `getPriceFeedsUpdateData` creates the update data which can be submitted to your contract. Then your contract should
+  // call the Pyth Contract with this data.
   const pythPriceService = new EvmPriceServiceConnection(
     "https://xc-testnet.pyth.network"
   ); // See Price Service endpoints section below for other endpoints
@@ -41,8 +45,43 @@ function InputTradeValues() {
 
     getPythUpdateData();
   }, []);
+  //console.log(priceFeedUpdateData);
 
-  console.log(priceFeedUpdateData);
+  //works
+  const {
+    data: pythPriceFeedAddress,
+    error: getPythPriceFeedAddressError,
+    isLoading: getPythPriceFeedAddressIsLoading,
+  } = useContractRead({
+    address: orderBookContractAddress,
+    abi: orderBookAbi,
+    args: [],
+    functionName: "getPythPriceFeedAddress",
+
+    onSuccess(data) {
+      console.log("Success on getting pyth feed address", data);
+    },
+  });
+  //console.log("Pyth address is: ", pythPriceFeedAddress);
+  //console.log("Pyth address error is: ", getPythPriceFeedAddressError);
+
+  //works
+  //retrieving array of strings with pair symbols
+  const {
+    data: pairSymbols,
+    error: pairSymbolsError,
+    isLoading: pairSymbolsIsLoading,
+  } = useContractRead({
+    address: orderBookContractAddress,
+    abi: orderBookAbi,
+    args: [],
+    functionName: "getAssetPairIndexSymbol",
+
+    onSuccess(data) {
+      console.log("Success on getting pair Symbols array", data);
+    },
+  });
+  //console.log("pairSymbol error is: ", pairSymbolsError);
 
   const toggleOrderTypeHandler = () => {
     if (orderType === 0) {
@@ -51,10 +90,6 @@ function InputTradeValues() {
       setOrderType(0);
     }
   };
-
-  // In order to use Pyth prices in your protocol you need to submit the price update data to Pyth contract in your target
-  // chain. `getPriceFeedsUpdateData` creates the update data which can be submitted to your contract. Then your contract should
-  // call the Pyth Contract with this data.
 
   //Note the update Fee is given in wei
   ////////////////////
@@ -76,32 +111,47 @@ function InputTradeValues() {
       );
     },
   });
-  console.log("The update fee is: ", getUpdateFeeData?.result);
-  console.log("The read is loading:", getUpdateFeeDataIsLoading);
-  console.log("The read is in error: ", getUpdateFeeDataError);
+  //console.log("The update fee is: ", getUpdateFeeData?.result);
+  //console.log("The read is loading:", getUpdateFeeDataIsLoading);
+  //console.log("The read is in error: ", getUpdateFeeDataError);
 
   ////////////////////
   // Contract Writes//
   ///////////////////
 
   //marketOrder
-  const { config: marketOrderConfig, marketOrderError } =
-    usePrepareContractWrite({
-      address: orderBookContractAddress,
-      abi: orderBookAbi,
-      functionName: "marketOrder",
-      args: [
-        orderArgs[0],
-        orderArgs[1],
-        orderArgs[2],
-        orderArgs[3],
-        orderArgs[4],
-      ],
-      value: getUpdateFeeData,
-      onSuccess(data) {
-        console.log("Success", data.result);
-      },
-    });
+  const {
+    config: marketOrderConfig,
+    data: prepareMarketOrderData,
+    error: marketOrderError,
+    isError: errorBool,
+    isLoading: prepareMarketOrderIsLoading,
+    status,
+  } = usePrepareContractWrite({
+    address: orderBookContractAddress,
+    abi: orderBookAbi,
+    functionName: "marketOrder",
+    args: [
+      orderArgs[0],
+      orderArgs[1],
+      orderArgs[2],
+      orderArgs[3],
+      orderArgs[4],
+    ],
+    value: getUpdateFeeData,
+    onSuccess(data) {
+      console.log("Success prepare contract write marketOrder", data.result);
+    },
+  });
+
+  //console.log("The prepare marketOrder data: ", prepareMarketOrderData);
+  /* console.log(
+    "The prepare marketOrder is loading:",
+    prepareMarketOrderIsLoading
+  ); */
+  //console.log("The prepare marketOrder is in error: ", marketOrderError);
+  //console.log("The prepare marketOrder is in error: ", errorBool);
+  //console.log("The prepare marketOrder status ", status);
 
   const {
     data: marketOrderData,
@@ -116,13 +166,7 @@ function InputTradeValues() {
       address: orderBookContractAddress,
       abi: orderBookAbi,
       functionName: "orderClose",
-      args: [
-        orderArgs[0],
-        orderArgs[1],
-        orderArgs[2],
-        orderArgs[3],
-        orderArgs[4],
-      ],
+      args: [1, 2, priceFeedUpdateData],
       value: getUpdateFeeData,
       onSuccess(data) {
         console.log("Success", data.result);
