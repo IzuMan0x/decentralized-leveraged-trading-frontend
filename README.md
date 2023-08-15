@@ -1,10 +1,10 @@
 This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
-## This is the frontend for a [smart-contract](https://github.com/IzuMan0x/decentralized-leveraged-trading)
+## This is the frontend for this [smart-contract](https://github.com/IzuMan0x/decentralized-leveraged-trading)
 
-This project is currently in development and not fully tested. This is actively updated
+This project is currently in development and not fully tested. This is actively updated.
 
-## Getting Started
+## Default Next Js instructions: Getting Started
 
 First, run the development server:
 
