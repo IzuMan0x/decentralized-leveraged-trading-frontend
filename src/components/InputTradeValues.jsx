@@ -11,7 +11,8 @@ import {
 /* Contract abi location  **Note the ABI needs to be an array to be used with viem or wagmi*/
 import { abi as orderBookAbi } from "../assets/orderbook-contract-abi.json";
 import { abi as pythnetworkAbi } from "../assets/pythnetwork-abi.json";
-import { parseEther, formatUnits } from "viem";
+import { abi as erc20MockAbi } from "../assets/ERC20Mock-abi.json";
+import { parseEther, formatUnits, etherUnits } from "viem";
 
 //note we need to prefix the env variables with NEXT_PUBLIC to use them on the browser side
 const orderBookContractAddress =
@@ -23,6 +24,61 @@ function InputTradeValues() {
   const [orderType, setOrderType] = useState(0);
   const [orderArgs, setOrderArgs] = useState([]);
   const [priceFeedUpdateData, setPriceFeedUpdateData] = useState([]);
+  const { address, isConnected } = useAccount();
+
+  ////////////////////
+  // Testing Contract//
+  ///////////////////
+
+  const {
+    data: getTokenCollateralAddressData,
+    error: getTokenCollateralAddressError,
+    isLoading: getTokenCollateralAddressIsLoading,
+  } = useContractRead({
+    address: orderBookContractAddress,
+    abi: orderBookAbi,
+    args: [],
+    functionName: "getTokenCollateralAddress",
+
+    onSuccess(data) {
+      console.log("Success on getting pyth feed address", data);
+    },
+  });
+
+  console.log("token collateral address is: ", getTokenCollateralAddressData);
+
+  //mint erc20 token for testing
+  //This is just for test purposes to mint collateral so we can interact with the contract
+  const mockTokenCollateralAddress =
+    "0x71c95911e9a5d330f4d621842ec243ee1343292e";
+  const {
+    config: mintConfig,
+    data: prepareMintData,
+    error: mintError,
+    isError: mintErrorBool,
+    isLoading: prepareMintIsLoading,
+    status: prepareMintStatus,
+  } = usePrepareContractWrite({
+    address: getTokenCollateralAddressData,
+    abi: erc20MockAbi,
+    functionName: "mint",
+    args: [address, parseEther("1000")],
+    onSuccess(data) {
+      console.log(
+        "Success prepare contract write mint erc20 mock",
+        data.result
+      );
+    },
+  });
+  console.log("Prepare erc20 mint data is: ", prepareMintData);
+  console.log("Prepare erc20 mint  error is: ", mintError);
+
+  const {
+    data: mintData,
+    isSuccess: mintIsSuccess,
+    isLoading: mintIsLoading,
+    write: mint,
+  } = useContractWrite(mintConfig);
 
   // In order to use Pyth prices in your protocol you need to submit the price update data to Pyth contract in your target
   // chain. `getPriceFeedsUpdateData` creates the update data which can be submitted to your contract. Then your contract should
@@ -119,6 +175,28 @@ function InputTradeValues() {
   // Contract Writes//
   ///////////////////
 
+  const {
+    config: approveTokenConfig,
+    data: prepapreApproveToken,
+    error: approveTokenError,
+    isLoading: prepareApproveTokenIsLoading,
+  } = usePrepareContractWrite({
+    address: getTokenCollateralAddressData,
+    abi: erc20MockAbi,
+    functionName: "approve",
+    args: [orderBookContractAddress, 2 ** (256 - 1)],
+    onSuccess(data) {
+      console.log("Success prepare contract write approve token", data.result);
+    },
+  });
+  console.log("Approve token error is: ", approveTokenError);
+  const {
+    data: approveTokenData,
+    isSuccess: approveTokenSuccess,
+    isLoading: approveTokenIsLoading,
+    write: approve,
+  } = useContractWrite(approveTokenConfig);
+
   //marketOrder
   const {
     config: marketOrderConfig,
@@ -149,7 +227,7 @@ function InputTradeValues() {
     "The prepare marketOrder is loading:",
     prepareMarketOrderIsLoading
   ); */
-  //console.log("The prepare marketOrder is in error: ", marketOrderError);
+  console.log("The prepare marketOrder is in error: ", marketOrderError);
   //console.log("The prepare marketOrder is in error: ", errorBool);
   //console.log("The prepare marketOrder status ", status);
 
@@ -186,13 +264,18 @@ function InputTradeValues() {
     const collateral = event.target.collateral.value;
     const leverage = event.target.leverage.value;
     const pythCallData = priceFeedUpdateData;
-    const pairIndex = 1;
-    setOrderArgs([pairIndex, collateral, leverage, orderType, pythCallData]);
+    const pairIndex = "0";
+    setOrderArgs([
+      pairIndex,
+      parseEther(collateral),
+      leverage,
+      orderType,
+      pythCallData,
+    ]);
 
     console.log("Submitted trade data is: ", orderArgs);
+    marketOrder?.();
   };
-
-  const { address, isConnected } = useAccount();
 
   return (
     <>
@@ -251,6 +334,20 @@ function InputTradeValues() {
           className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
         >
           Open Trade
+        </button>
+        <button
+          type="button"
+          onClick={() => mint?.()}
+          className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+        >
+          Mint Test Colleater
+        </button>
+        <button
+          type="button"
+          onClick={() => approve?.()}
+          className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+        >
+          Approve Token
         </button>
       </form>
     </>

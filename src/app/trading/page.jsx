@@ -21,6 +21,7 @@ import TradingViewWidget from "../../components/TradingViewWidget";
 import NavBar from "../../components/NavBar";
 import InputTradeValues from "@/components/InputTradeValues";
 import OpenTrades from "@/components/OpenTrades";
+import TestingForm from "@/components/TestingForm";
 //import { Profile } from "./Profile";
 
 /* Defining the localchain becasue the provided localchain from WAGMI has a different Id of 1337 */
@@ -84,6 +85,7 @@ function TradingPage() {
             </div>
           </div>
         </div>
+        <TestingForm />
       </WagmiConfig>
     </div>
   );
