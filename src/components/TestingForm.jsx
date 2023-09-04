@@ -9,13 +9,16 @@ import {
   useContractRead,
 } from "wagmi";
 /* Contract abi location  **Note the ABI needs to be an array to be used with viem or wagmi*/
-import { abi as orderBookAbi } from "../assets/orderbook-contract-abi.json";
+import { abi as orderBookAbi } from "../assets/OrderBook.json";
 import { abi as pythnetworkAbi } from "../assets/pythnetwork-abi.json";
 import { abi as erc20MockAbi } from "../assets/ERC20Mock-abi.json";
+import { abi as mockPythAbi } from "../assets/mock-pyth-abi.json";
 import { parseEther, formatUnits } from "viem";
 
 function TestingForm() {
   const { address, isConnected } = useAccount();
+
+  //orderBook address
   const orderBookContractAddress =
     process.env.NEXT_PUBLIC_ORDER_BOOK_CONTRACT_ADDRESS;
   //works
@@ -90,9 +93,48 @@ function TestingForm() {
     write: mint,
   } = useContractWrite(mintConfig);
 
+  //updating pyth price feed MOCK
+
+  const BASE_PRICE_ID =
+    "0x000000000000000000000000000000000000000000000000000000000000abcd";
+  const basePrice = 1000;
+  const { config: mockPythConfig, error: mockPythPrepareConfigError } =
+    usePrepareContractWrite({
+      address: pythPriceFeedAddress,
+      abi: mockPythAbi,
+      functionName: "createPriceFeedUpdateData",
+      args: [
+        BASE_PRICE_ID,
+        basePrice * 100000,
+        10 * 100000,
+        -5,
+        basePrice * 100000,
+        10 * 100000,
+        18000,
+      ],
+      onSuccess(data) {
+        console.log(
+          "Success prepare contract write mint erc20 mock",
+          data.result
+        );
+      },
+    });
+  console.log(
+    "Prepare mock pyth update error is: ",
+    mockPythPrepareConfigError
+  );
+
+  const {
+    data: pythMockUpdateData,
+    isSuccess: pythMockUpdateIsSuccess,
+    isLoading: pythMockUpdateIsLoading,
+    write: createPriceFeedUpdateData,
+  } = useContractWrite(mintConfig);
+  console.log("Prepare mock pyth update data is: ", pythMockUpdateData);
+
   return (
     <form className=" px-6">
-      <div className="grid gap-6 mb-6 md:grid-cols-2">
+      <div className="grid gap-6 md:grid-cols-2">
         <div>
           <label class="block mb-2 text-sm font-medium text-white">
             Mint Amount
@@ -136,6 +178,7 @@ function TestingForm() {
           />
           <button
             type="button"
+            onClick={() => createPriceFeedUpdateData?.()}
             className="m-6 text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
           >
             Update

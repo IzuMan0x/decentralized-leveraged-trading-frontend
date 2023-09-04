@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 
 import {
   EthereumClient,
@@ -21,7 +21,7 @@ import TradingViewWidget from "../../components/TradingViewWidget";
 import NavBar from "../../components/NavBar";
 import InputTradeValues from "@/components/InputTradeValues";
 import OpenTrades from "@/components/OpenTrades";
-import TestingForm from "@/components/TestingForm";
+import TestingForm from "@/components/TESTINGForm";
 //import { Profile } from "./Profile";
 
 /* Defining the localchain becasue the provided localchain from WAGMI has a different Id of 1337 */
@@ -64,28 +64,33 @@ const wagmiConfig = createConfig({
 });
 
 function TradingPage() {
+  const [tradingViewAsset, setTradingViewAsset] = useState("ETHUSD");
+
+  const tradingViewAssetChangeHandler = (asset) => {
+    setTradingViewAsset(asset);
+  };
+
   return (
-    <div className="h-full w-full">
+    <div className=" bg-black h-full w-full overflow-hidden overflow-y-hidden">
       <WagmiConfig config={wagmiConfig} chains={chains}>
         <WalletConnectModal config={wagmiConfig} chains={chains} />
 
-        <div className="bg-black bg-repeat h-full w-full">
+        <div className="w-full h-full">
           <div>
             <NavBar />
           </div>
-          <div className="h-screen w-screen py-20 ">
+          <div className="h-screen w-screen py-10 ">
             <div className="h-full w-full flex px-6">
-              <TradingViewWidget />
+              <TradingViewWidget assetSelect={tradingViewAsset} />
               <div className="text-white mx-10 border-solid border-4 border-white px-6 py-3">
-                <InputTradeValues />
+                <InputTradeValues assetChange={tradingViewAssetChangeHandler} />
               </div>
             </div>
-            <div className="flex flex-center items-center justify-right border-solid border-4 border-white mx-10 my-5 h-10">
-              <OpenTrades />
-            </div>
+          </div>
+          <div className="flex flex-center items-center justify-center border-solid border-4 border-white mx-10 my-5 p-10 h-auto w-auto">
+            <OpenTrades />
           </div>
         </div>
-        <TestingForm />
       </WagmiConfig>
     </div>
   );

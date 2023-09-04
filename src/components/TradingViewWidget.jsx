@@ -2,7 +2,7 @@ import React, { useEffect, useRef } from "react";
 
 let tvScriptLoadingPromise;
 
-export default function TradingViewWidget() {
+export default function TradingViewWidget(props) {
   const onLoadScriptRef = useRef();
 
   useEffect(() => {
@@ -30,7 +30,7 @@ export default function TradingViewWidget() {
       if (document.getElementById("tradingview") && "TradingView" in window) {
         new window.TradingView.widget({
           autosize: true,
-          symbol: "PYTH:BTCUSD",
+          symbol: `PYTH:${props.assetSelect}`,
           interval: "D",
           timezone: "Etc/UTC",
           theme: "dark",
@@ -43,7 +43,7 @@ export default function TradingViewWidget() {
         });
       }
     }
-  }, []);
+  }, [props.assetSelect]);
 
   return (
     <>
