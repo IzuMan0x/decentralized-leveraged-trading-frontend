@@ -11,6 +11,7 @@ import {
   usePrepareContractWrite,
   useContractWrite,
   useContractRead,
+  useContractReads,
 } from "wagmi";
 import { watchContractEvent } from "@wagmi/core";
 /* Contract abi location  **Note the ABI needs to be an array to be used with viem or wagmi*/
@@ -20,19 +21,22 @@ import { abi as pythnetworkAbi } from "../assets/pythnetwork-abi.json";
 import { parseEther, formatUnits } from "viem";
 import { PriceTicker } from "./PythPriceText";
 import CloseTrade from "./CloseTrade";
+import PositionPnl from "./PositionPnl";
 import { useIsMounted } from "@/hooks/useIsMounted";
+import dotenv from "dotenv";
 
 const orderBookContractAddress =
   process.env.NEXT_PUBLIC_ORDER_BOOK_CONTRACT_ADDRESS;
+
+const orderBook = {
+  address: process.env.NEXT_PUBLIC_ORDER_BOOK_CONTRACT_ADDRESS,
+  abi: orderBookAbi.abi,
+};
 
 function OpenTrades() {
   //This hook is to prevent the hydration error
   const mounted = useIsMounted();
   const { address, isConnected } = useAccount();
-
-  const [ethereumPrice, setEthereumPrice] = useState();
-  const [userOpenTradesForPair, setUserOpenTradesForPair] = useState([]);
-  const [displayUserTrades, setDisplayUserTrades] = useState([]);
   ////////////////////
   // Contract Reads//
   ///////////////////
@@ -45,81 +49,34 @@ function OpenTrades() {
     "MATIC/USD",
     "BNB/USD",
   ];
-  let userOpenTradesArray = [];
-  //works
-  for (let index = 0; index < assetArray.length; index++) {
-    const {
-      data: userOpenTrades,
-      error: userOpenTradesError,
-      isLoading: userOpenTradesIsLoading,
-    } = useContractRead({
-      address: process.env.NEXT_PUBLIC_ORDER_BOOK_CONTRACT_ADDRESS,
-      abi: orderBookAbi.abi,
-      functionName: "getUserOpenTradesForAsset",
-      args: [address, index],
-      watch: true,
-      onSuccess(data) {
-        console.log("Success on getting user open trades: ", data);
-      },
-    });
-    console.log("userOpentradesData: ", userOpenTrades);
-    console.log("userOpenTradesError: ", userOpenTradesError);
-    userOpenTradesArray[index] = userOpenTrades;
-    console.log("userOpenTradesArray", userOpenTradesArray);
-  }
-
-  /*   useEffect(() => {
-    setUserOpenTradesForPair(userOpenTradesArray);
-    setDisplayUserTrades(userTradePositionDetails);
-  }, []); */
-
-  console.log("displayUserTrades:", displayUserTrades);
-
-  //tested and works on local network, be careful of real network delay
-  console.log("getUserOpenTradesForAsset ", userOpenTradesArray);
-
-  //Getting the trade position details
-  //works
-  let userTradePositionDetails = [];
-
-  if (userTradePositionDetails !== null) {
-    for (let index = 0; index < userOpenTradesArray.length; index++) {
-      if (userOpenTradesArray[index] == 0) {
-      } else {
-        for (let i = 1; i <= userOpenTradesArray[index]; i++) {
-          const {
-            data: userTradePositionDetailsData,
-            error: userTradePostionDetailsError,
-            isLoading: userTradePostionDetailsIsLoading,
-          } = useContractRead({
-            address: process.env.NEXT_PUBLIC_ORDER_BOOK_CONTRACT_ADDRESS,
-            abi: orderBookAbi.abi,
-            functionName: "getUserTradingPositionDetails",
-            args: [address, index, i],
-            onSuccess(data) {
-              console.log(
-                "Success on getting user open postion Details: ",
-                data
-              );
-            },
-          });
-
-          userTradePositionDetails.push(userTradePositionDetailsData);
-        }
-      }
-    }
-  }
-
-  console.log("getUserTradingPositionDetails ", userTradePositionDetails);
+  const longShortSymbolArray = ["Long", "Short"];
+  // This is return and array of size 15 that will include all the user's open trades
+  const {
+    data: allUserOpenTrades,
+    error: allUserOpenTradesError,
+    isError: allUserOpenTradesIsError,
+    isLoading: allUserOpenTradesIsLoading,
+  } = useContractRead({
+    address: orderBook.address,
+    abi: orderBook.abi,
+    functionName: "getAllUserOpenTrades",
+    args: [address],
+    watch: true,
+    onSuccess(data) {
+      console.log("Success on getting user open trades: ", data);
+    },
+  });
+  console.log("all user trades are: ", allUserOpenTrades);
 
   ///////////////////////
   //Testing Features////
   //////////////////////
-  const ETH_PRICE_ID =
+  // Might need it for testing trade winning and price change effects
+  /* const ETH_PRICE_ID =
     "0x000000000000000000000000000000000000000000000000000000000000abcd";
   const BTC_PRICE_ID =
     "0x0000000000000000000000000000000000000000000000000000000000001234";
-  const ethPrice = 900;
+  const ethPrice = 1000;
   const btcPrice = 26000;
   const blockTime = 1692955175;
   //manually setting the update parameters
@@ -132,9 +89,9 @@ function OpenTrades() {
     ethPrice * 1e5,
     10 * 1e5,
     blockTime,
-  ];
+  ]; */
 
-  // adding a listener for contract events
+  /*   // adding a listener for contract events
   const unwatchTradeOpened = watchContractEvent(
     {
       address: orderBookContractAddress,
@@ -150,96 +107,7 @@ function OpenTrades() {
       eventName: "OrderClosed",
     },
     (log) => console.log(log)
-  );
-
-  //works
-  //getting the priceFeed address from the OrderBook contract
-  const {
-    data: pythPriceFeedAddress,
-    error: getPythPriceFeedAddressError,
-    isLoading: getPythPriceFeedAddressIsLoading,
-  } = useContractRead({
-    address: orderBookContractAddress,
-    abi: orderBookAbi.abi,
-    args: [],
-    functionName: "getPythPriceFeedAddress",
-
-    onSuccess(data) {
-      console.log("Success on getting pyth feed address", data);
-    },
-  });
-  //console.log("Pyth address is: ", pythPriceFeedAddress);
-  //console.log("Pyth address error is: ", getPythPriceFeedAddressError);
-
-  const {
-    data: mockPythUpdateDataArray,
-    error: mockPythUpdateDataArrayError,
-    isLoading: mockPythUpdateDataArrayIsLoading,
-  } = useContractRead({
-    address: pythPriceFeedAddress,
-    abi: mockPythContractAbi.abi,
-    args: mockPythArgsArray ? mockPythArgsArray : [0],
-    functionName: "createPriceFeedUpdateData",
-
-    onSuccess(data) {
-      console.log("Success on getting mock pyth update data", data);
-    },
-  });
-  //console.log("mockPythUpdateDataArray", mockPythUpdateDataArray);
-
-  //orderClose
-  const [orderCloseParameters, setOrderCloseParameters] = useState([]);
-
-  const tradeCloseHandler = (id, pairIndex) => {
-    console.log("Order close function 1245", orderClose);
-    const offsetId = id + 1;
-    console.log("Order close parameters are: ", id, pairIndex);
-    //why is the pairIndex data undefined?????????
-    const pythCallData = [mockPythUpdateDataArray];
-    setOrderCloseParameters([pairIndex, offsetId, pythCallData]);
-    orderClose?.();
-  };
-
-  const {
-    config: orderCloseConfig,
-    data: orderClosePrepareData,
-    error: orderCloseError,
-    isError: orderCloseIsError,
-    status: orderClosePrepareStatus,
-  } = usePrepareContractWrite({
-    address: orderBookContractAddress,
-    abi: orderBookAbi.abi,
-    functionName: "orderClose",
-    //The follow prevents throwing an error on the initial load when the array is undefined
-    args: [
-      orderCloseParameters[0],
-      orderCloseParameters[1],
-      orderCloseParameters[2],
-    ],
-    value: 1,
-    onSuccess(data) {
-      console.log("Success", data.result);
-    },
-  });
-  console.log("orderCloseIsError is in error", orderCloseIsError);
-  console.log("orderCloseConfig is:", orderCloseConfig);
-  console.log("orderClosePrepareData is: ", orderClosePrepareData);
-  console.log("Order close prepare status", orderClosePrepareStatus);
-  console.log("orderClose error is: ", orderCloseError);
-
-  const {
-    data: orderCloseData,
-    error: orderCloseWriteError,
-    isSuccess: orderCloseSuccess,
-    isLoading: orderCloseIsLoading,
-    status: orderCloseWriteStatus,
-    write: orderClose,
-  } = useContractWrite(orderCloseConfig);
-  console.log("Order Close write data 1245", orderCloseData);
-  console.log("order close write is loading: ", orderCloseIsLoading);
-  console.log("write order close error is: ", orderCloseWriteError);
-  console.log("Order close write status is: ", orderCloseWriteStatus);
-  //console.log("1245 data is: ", pythOffChainPrice);
+  ); */
 
   return (
     <>
@@ -251,6 +119,9 @@ function OpenTrades() {
               <tr>
                 <th scope="col" class="px-6 py-3">
                   Asset Pair
+                </th>
+                <th scope="col" className="px-6 py-3">
+                  Long/Short
                 </th>
                 <th scope="col" class="px-6 py-3">
                   Open Price
@@ -267,11 +138,12 @@ function OpenTrades() {
               </tr>
             </thead>
 
-            {mounted && userOpenTradesArray.length >= 5
-              ? userTradePositionDetails &&
-                userTradePositionDetails.map(
-                  (userTradePositionDetail, index) => {
-                    const pairIndex = userTradePositionDetail.pairNumber;
+            {mounted && !allUserOpenTradesIsError
+              ? allUserOpenTrades &&
+                allUserOpenTrades.map((userTradePositionDetail, index) => {
+                  const pairIndex = userTradePositionDetail.pairNumber;
+                  const userTradeIdForPair = index % 3;
+                  if (userTradePositionDetail.leverage != 0) {
                     return (
                       <tbody>
                         <tr class="bg-white border-b dark:bg-gray-900 dark:border-gray-700">
@@ -285,6 +157,19 @@ function OpenTrades() {
                                 ]
                               : "loading..."}
                           </th>
+                          <td
+                            className={`px-6 py-4 ${
+                              userTradePositionDetail.longShort == 0
+                                ? "text-green-700"
+                                : "text-red-600"
+                            }`}
+                          >
+                            {
+                              longShortSymbolArray[
+                                userTradePositionDetail.longShort
+                              ]
+                            }
+                          </td>
                           <td class="px-6 py-4">
                             $
                             {userTradePositionDetail
@@ -299,29 +184,29 @@ function OpenTrades() {
                               pairIndex={userTradePositionDetail?.pairNumber}
                             />
                           </td>
-                          <td class="px-6 py-4">$PNL</td>
                           <td class="px-6 py-4">
-                            {/* <div
-                          class="font-medium text-red-600 dark:text-blue-500 hover:underline justify-center hover:cursor-pointer"
-                          id={index}
-                          pairIndex={userTradePositionDetail?.pairNumberß}
-                          onClick={tradeCloseHandler}
-                          closeTrade={tradeCloseHandler}
-                        >
-                          X
-                        </div> */}
-
+                            <PositionPnl
+                              pairIndex={userTradePositionDetail.pairNumber}
+                              collateral={
+                                userTradePositionDetail.collateralAfterFee
+                              }
+                              leverage={userTradePositionDetail.leverage}
+                              openPrice={userTradePositionDetail.openPrice}
+                              orderType={userTradePositionDetail.longShort}
+                              openTradesIdForPair={userTradeIdForPair}
+                            />
+                          </td>
+                          <td class="px-6 py-4">
                             <CloseTrade
-                              id={index}
+                              id={userTradeIdForPair}
                               value={pairIndex}
-                              closeUserTrade={tradeCloseHandler}
                             />
                           </td>
                         </tr>
                       </tbody>
                     );
                   }
-                )
+                })
               : null}
           </table>
         </div>

@@ -18,6 +18,7 @@ import mockPythContractAbi from "../assets/mock-pyth-abi.json";
 import { abi as erc20MockAbi } from "../assets/ERC20Mock-abi.json";
 import { PriceTicker } from "./PythPriceText";
 import LongShortToggle from "./LongShortToggle";
+import TradeModal from "./TradeModal";
 
 //note we need to prefix the env variables with NEXT_PUBLIC to use them on the browser side
 const orderBookContractAddress =
@@ -33,6 +34,8 @@ function InputTradeValues(props) {
   const [orderArgs, setOrderArgs] = useState([]);
   const [priceFeedUpdateData, setPriceFeedUpdateData] = useState([]);
   const { address, isConnected } = useAccount();
+  const [tokenAllowance, setTokenAllowance] = useState();
+  const [collateralInput, setCollateralInput] = useState(0);
 
   ////////////////////////////////////////////////////////////////////
   //Functions for Testing the Contract Intereacting with Mocks etc.///
@@ -58,6 +61,20 @@ function InputTradeValues(props) {
     },
   });
   console.log("Token collateral address is: ", getTokenCollateralAddressData);
+  const {
+    data: contractTokenAllowance,
+    error: contractTokenAllowanceError,
+    isLoading: contractTokenAllowanceIsLoading,
+  } = useContractRead({
+    address: getTokenCollateralAddressData,
+    abi: erc20MockAbi,
+    args: [address, orderBookContractAddress],
+    functionName: "allowance",
+
+    onSuccess(data) {
+      setTokenAllowance(formatUnits(data, 18));
+    },
+  });
 
   //mint erc20 token for testing
   //This is just for test purposes to mint collateral so we can interact with the contract
@@ -317,7 +334,8 @@ function InputTradeValues(props) {
 
   const [assetListHidden, setAssetListHidden] = useState(true);
   const [selectedAsset, setSelectedAsset] = useState();
-  const [selectedAssetSymbol, setSelectedAssetSymbol] = useState("");
+  const [selectedAssetSymbol, setSelectedAssetSymbol] =
+    useState("Select Asset Pair");
 
   const toggleAssetPairListHandler = () => {
     setAssetListHidden(() => !assetListHidden);
@@ -328,14 +346,29 @@ function InputTradeValues(props) {
   const selctedAssetHandler = (event) => {
     setSelectedAsset(event.target.value);
     setSelectedAssetSymbol(tradingViewArray[event.target.value]);
-    props.assetChange(tradingViewArray[event.target.value]);
+    props.assetChange(tradingViewArray[event.target.value], event.target.value);
     setAssetListHidden(true);
     console.log("Selected Asset is: ", event.target.value);
+  };
+  console.log("token allowance is: ", tokenAllowance);
+  console.log("token allowance is: collateral", collateralInput);
+
+  const [modal, setModal] = useState(true);
+
+  const toggleModal = () => {
+    setModal((prev) => !prev);
+    console.log("triggered close modal");
   };
 
   return (
     <>
-      <h1 className="text-white">Input Trade Values</h1>
+      {marketOrderSuccess && modal && (
+        <TradeModal
+          message={"Trade Successfully Opened!!!"}
+          toggleModal={toggleModal}
+        />
+      )}
+
       <form onSubmit={initiateTradeHandler}>
         <div className="grid gap-6 mb-6 md:grid-cols-2">
           <div>
@@ -343,11 +376,15 @@ function InputTradeValues(props) {
               id="dropdownSearchButton"
               data-dropdown-toggle="dropdownSearch"
               data-dropdown-placement="bottom"
-              className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+              data-dropdown-delay="100"
+              data-dropdown-trigger="hover"
+              className="text-white my-3 bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
               type="button"
               onClick={toggleAssetPairListHandler}
             >
-              Select Asset Pair {selectedAssetSymbol}
+              {selectedAssetSymbol === undefined || selectedAssetSymbol === 0
+                ? "Select Asset Pair"
+                : selectedAssetSymbol}
               <svg
                 className="w-2.5 h-2.5 ml-2.5"
                 aria-hidden="true"
@@ -370,7 +407,7 @@ function InputTradeValues(props) {
                 assetListHidden && "hidden"
               } bg-white rounded-lg shadow w-60 dark:bg-gray-700 absolute`}
             >
-              <div class="p-3">
+              <div class="p-3 hidden">
                 <label for="input-group-search" class="sr-only">
                   Search
                 </label>
@@ -512,6 +549,8 @@ function InputTradeValues(props) {
               className="flex -webkit-appearance:none -moz-appearance:textfield m-0 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
               placeholder="150"
               required
+              value={collateralInput}
+              onChange={(event) => setCollateralInput(event.target.value)}
             />
           </div>
           <div>
@@ -539,29 +578,33 @@ function InputTradeValues(props) {
             ></LongShortToggle>
           </div>
         </div>
-        <button
-          type="submit"
-          className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
-        >
-          Open Trade
-        </button>
+        {tokenAllowance == 0 || Number(tokenAllowance) < collateralInput ? (
+          <button
+            type="button"
+            onClick={() => approve?.()}
+            className="text-white bg-red-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+          >
+            Approve Token
+          </button>
+        ) : (
+          <button
+            type="submit"
+            className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+          >
+            Open Trade
+          </button>
+        )}
+
         <button
           type="button"
           onClick={() => mint?.()}
-          className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+          className="text-white my-2 bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
         >
           Mint Test Collateral
         </button>
-        <button
-          type="button"
-          onClick={() => approve?.()}
-          className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
-        >
-          Approve Token
-        </button>
       </form>
-      <div className="text-white mx-10 border-solid border-4 border-white px-6 py-3 my-4">
-        <h1 className="text-white">Estimated Execution Price:</h1>
+      <div className="flex text-white mx-10 border-solid border-4 border-white px-6 py-3 my-4">
+        <h1 className="text-white flex-shrink">Estimated Execution Price:</h1>
 
         <PriceTicker
           estimateTradeOpenPrice={selectedAsset}

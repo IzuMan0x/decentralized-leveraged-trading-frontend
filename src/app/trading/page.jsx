@@ -19,9 +19,10 @@ import {
 import WalletConnectModal from "../../components/WalletConnectModal";
 import TradingViewWidget from "../../components/TradingViewWidget";
 import NavBar from "../../components/NavBar";
+import InfoBar from "@/components/InfoBar";
 import InputTradeValues from "@/components/InputTradeValues";
 import OpenTrades from "@/components/OpenTrades";
-import TestingForm from "@/components/TESTINGForm";
+
 //import { Profile } from "./Profile";
 
 /* Defining the localchain becasue the provided localchain from WAGMI has a different Id of 1337 */
@@ -65,9 +66,11 @@ const wagmiConfig = createConfig({
 
 function TradingPage() {
   const [tradingViewAsset, setTradingViewAsset] = useState("ETHUSD");
+  const [tradingAssetIndex, setTradingAssetIndex] = useState(0);
 
-  const tradingViewAssetChangeHandler = (asset) => {
-    setTradingViewAsset(asset);
+  const tradingViewAssetChangeHandler = (assetSymbol, assetIndex) => {
+    setTradingViewAsset(assetSymbol);
+    setTradingAssetIndex(assetIndex);
   };
 
   return (
@@ -79,10 +82,19 @@ function TradingPage() {
           <div>
             <NavBar />
           </div>
+          <div>
+            <InfoBar
+              assetSelectIndex={tradingAssetIndex}
+              assetSelectSymbol={tradingViewAsset}
+            ></InfoBar>
+          </div>
           <div className="h-screen w-screen py-10 ">
             <div className="h-full w-full flex px-6">
               <TradingViewWidget assetSelect={tradingViewAsset} />
               <div className="text-white mx-10 border-solid border-4 border-white px-6 py-3">
+                <h1 className="text-white justify-center flex">
+                  Input Trade Parameters
+                </h1>
                 <InputTradeValues assetChange={tradingViewAssetChangeHandler} />
               </div>
             </div>

@@ -2,15 +2,20 @@ import React from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { Web3Button } from "@web3modal/react";
-import cryingCat from "../assets/cryingcat.png";
+import { useNetwork, useSwitchNetwork } from "wagmi";
+import logo from "../assets/website-logo.png";
 
 function NavBar() {
+  const { chain } = useNetwork();
+  const { chains, error, isLoading, pendingChainId, switchNetwork } =
+    useSwitchNetwork();
+
   return (
     <nav class="bg-blue-700 border-gray-200 dark:bg-gray-900 rounded-b-md">
       <div class="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
-        <a href="https://bettertrade.me" class="flex items-center">
+        <a href="/" class="flex items-center">
           <Image
-            src={cryingCat}
+            src={logo}
             className="h-8 w-8 mr-3 rounded-full shadow-md"
             alt="bettertrade.me logo"
           />
@@ -38,9 +43,10 @@ function NavBar() {
 
             <li>
               <a
-                href="#"
+                href="https://bettertrade-me.gitbook.io/untitled/"
                 class="block py-2 pl-3 pr-4 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0 md:dark:hover:text-blue-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700"
                 aria-current="page"
+                target="_blank"
               >
                 Documentation
               </a>
@@ -56,7 +62,8 @@ function NavBar() {
             </li>
             <li>
               <a
-                href="/contact"
+                href="https://discord.gg/J6q62sQF"
+                target="_blank"
                 class="block py-2 pl-3 pr-4 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0 md:dark:hover:text-blue-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700"
               >
                 Contact

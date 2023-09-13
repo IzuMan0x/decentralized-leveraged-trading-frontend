@@ -16,13 +16,11 @@ function Investing() {
         </div>
         <div>
           <h1 className="text-white text-4xl justify-center flex py-10">
-            Supply Cap is: 100,000,000 tokens
+            Coming soon!
           </h1>
         </div>
         <div>
-          <h1 className="text-white text-4xl justify-center flex py-10">
-            ICO sale is capped at 20,000,000 tokens @$0.05 each
-          </h1>
+          <h1 className="text-white text-4xl justify-center flex py-10"></h1>
         </div>
       </div>
     </div>
