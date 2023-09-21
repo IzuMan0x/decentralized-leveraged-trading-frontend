@@ -8,13 +8,11 @@ import {
   useContractWrite,
   useContractRead,
 } from "wagmi";
-import { readContract } from "@wagmi/core";
 import { parseEther, formatUnits, parseUnits, isBytes } from "viem";
 /* Contract abi location  **Note the ABI needs to be an array to be used with viem or wagmi*/
 //production
 import orderBookAbi from "../assets/OrderBook.json";
 import pythNetworkAbi from "../assets/pythnetwork-abi.json";
-import erc20Abi from "../assets/ERC20-abi.json";
 //testing
 import mockPythContractAbi from "../assets/mock-pyth-abi.json";
 import { abi as erc20MockAbi } from "../assets/ERC20Mock-abi.json";
@@ -85,7 +83,7 @@ function InputTradeValues(props) {
     isLoading: contractTokenAllowanceIsLoading,
   } = useContractRead({
     address: getTokenCollateralAddressData,
-    abi: erc20Abi.abi,
+    abi: erc20MockAbi,
     args: [address, orderBookContractAddress],
     functionName: "allowance",
 
@@ -130,6 +128,22 @@ function InputTradeValues(props) {
   //note price ID's need to be in string format
   const ETH_PRICE_ID =
     "0x000000000000000000000000000000000000000000000000000000000000abcd";
+  const BTC_PRICE_ID =
+    "0x0000000000000000000000000000000000000000000000000000000000001234";
+  const ethPrice = 1000;
+  const btcPrice = 26000;
+  const blockTime = 1692954175;
+  //manually setting the update parameters
+  //In production these will come from the api endpoint or wormhole, but here we create it ourselves
+  const mockPythArgsArray = [
+    ETH_PRICE_ID,
+    ethPrice * 1e5,
+    10 * 1e5,
+    -5,
+    ethPrice * 1e5,
+    10 * 1e5,
+    blockTime,
+  ];
 
   //works
   //getting the priceFeed address from the OrderBook contract
@@ -149,6 +163,23 @@ function InputTradeValues(props) {
   });
   //console.log("Pyth address is: ", pythPriceFeedAddress);
   //console.log("Pyth address error is: ", getPythPriceFeedAddressError);
+
+  const {
+    data: mockPythUpdateDataArray,
+    error: mockPythUpdateDataArrayError,
+    isLoading: mockPythUpdateDataArrayIsLoading,
+  } = useContractRead({
+    address: pythPriceFeedAddress,
+    abi: mockPythContractAbi.abi,
+    args: mockPythArgsArray,
+    functionName: "createPriceFeedUpdateData",
+
+    onSuccess(data) {
+      console.log("Success on getting mock pyth update data", data);
+    },
+  });
+  console.log("Mock pyth update data error is: ", mockPythUpdateDataArrayError);
+  console.log("Mock pyth update data is: ", mockPythUpdateDataArray);
 
   //during testing we will pass the mockPythUpdateArray to the marketOrdder function
 
@@ -185,10 +216,10 @@ function InputTradeValues(props) {
       );
     },
   });
-  console.log("The update fee is: ", getUpdateFeeData?.result);
+  console.log("The update fee is: ", getUpdateFeeData?.result); */
   //console.log("The read is loading:", getUpdateFeeDataIsLoading);
   //console.log("The read is in error: ", getUpdateFeeDataError);
- */
+
   ////////////////////
   // Contract Writes//
   ///////////////////
@@ -200,7 +231,7 @@ function InputTradeValues(props) {
     isLoading: prepareApproveTokenIsLoading,
   } = usePrepareContractWrite({
     address: getTokenCollateralAddressData,
-    abi: erc20Abi.abi,
+    abi: erc20MockAbi,
     functionName: "approve",
     args: [orderBookContractAddress, 2 ** (256 - 1)],
     onSuccess(data) {
@@ -217,21 +248,8 @@ function InputTradeValues(props) {
 
   //Long and short toggle
   const initiateTradeHandler = async (event) => {
-    event.preventDefault();
     if (prepareContract == false) {
-      const pythPriceService = new EvmPriceServiceConnection(
-        "https://xc-testnet.pyth.network"
-      );
-      const priceFeedUpdateData =
-        await pythPriceService.getPriceFeedsUpdateData([
-          "0xca80ba6dc32e08d06f1aa886011eed1d77c77be9eb761cc10d72b7d0a2fd57a6",
-        ]);
-      const pythUpdateFee = await readContract({
-        address: "0x2880aB155794e7179c9eE2e38200202908C17B43",
-        abi: pythNetworkAbi.abi,
-        functionName: "getUpdateFee",
-        args: [priceFeedUpdateData],
-      });
+      event.preventDefault();
       let orderTypeArgs;
       setOrderType((prev) => {
         orderTypeArgs = prev;
@@ -241,7 +259,7 @@ function InputTradeValues(props) {
       const collateral = parseEther(event.target.collateral.value);
       //leverage is 1e6
       const leverage = parseUnits(event.target.leverage.value, 6);
-      //const pythCallData = [mockPythUpdateDataArray];
+      const pythCallData = [mockPythUpdateDataArray];
       //This needs to be set by the user
       const pairIndex = selectedAsset;
 
@@ -250,8 +268,7 @@ function InputTradeValues(props) {
         collateral,
         leverage,
         orderTypeArgs,
-        priceFeedUpdateData,
-        pythUpdateFee,
+        pythCallData,
       ]);
 
       console.log("The submitted orderType is: ", orderTypeArgs);

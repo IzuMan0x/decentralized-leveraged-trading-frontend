@@ -6,6 +6,8 @@ import {
 } from "wagmi";
 import mockPythContractAbi from "../assets/mock-pyth-abi.json";
 import orderBookAbi from "../assets/OrderBook.json";
+import TradeModal from "./TradeModal";
+
 //This setup worked at least once 🧐
 
 const orderBook = {
@@ -103,13 +105,22 @@ function CloseTrade(props) {
   };
 
   return (
-    <div
-      className="hover:cursor-pointer text-blue-500 hover:text-red-500"
-      onClick={() => orderClose?.()}
-      value={props.value}
-    >
-      CloseTrade
-    </div>
+    <>
+      {orderCloseData && (
+        <TradeModal
+          mainMessage={"Successfully closed a trade"}
+          buttonMessage={"Shut it down!!"}
+        ></TradeModal>
+      )}
+
+      <div
+        className="hover:cursor-pointer text-blue-500 hover:text-red-500"
+        onClick={() => orderClose?.()}
+        value={props.value}
+      >
+        CloseTrade
+      </div>
+    </>
   );
 }
 

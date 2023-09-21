@@ -1,7 +1,7 @@
 import React from "react";
 
 function LongShortToggle(props) {
-  console.log("LongShortToggle: ", props.orderType);
+  //console.log("LongShortToggle: ", props.orderType);
   return (
     <div>
       <label class="relative inline-flex items-center cursor-pointer">

@@ -1,17 +1,17 @@
 import React, { useState } from "react";
 
 function TradeModal(props) {
-  //const [modal, setModal] = useState();
+  const [modal, setModal] = useState(true);
 
-  /* const toggleModal = () => {
-    setModal((prev) => !prev);
-    console.log("triggered close modal");
-  }; */
+  const closeModal = () => {
+    setModal(false);
 
+    console.log("closed the Trade Modal");
+  };
   return (
     <div>
-      {true && (
-        <div className="realative w-full h-full" onClick={props.toggleModal}>
+      {modal && (
+        <div className="realative w-full h-full" onClick={closeModal}>
           <div className="absolute top-0 right-0 h-32 w-32">
             <div
               id="popup-modal"
@@ -22,8 +22,8 @@ function TradeModal(props) {
                 <div class="relative bg-white rounded-lg shadow dark:bg-gray-700">
                   <button
                     type="button"
-                    onClick={props.toggleModal}
-                    class="absolute top-3 right-2.5 text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ml-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white"
+                    onClick={closeModal}
+                    className="absolute top-3 right-2.5 text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ml-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white"
                   >
                     <svg
                       class="w-3 h-3"
@@ -44,7 +44,7 @@ function TradeModal(props) {
                   </button>
                   <div class="p-6 text-center">
                     <svg
-                      class="mx-auto mb-4 text-gray-400 w-12 h-12 dark:text-gray-200"
+                      className="mx-auto mb-4 text-gray-400 w-12 h-12 dark:text-gray-200"
                       aria-hidden="true"
                       xmlns="http://www.w3.org/2000/svg"
                       fill="none"
@@ -58,16 +58,16 @@ function TradeModal(props) {
                         d="M10 11V6m0 8h.01M19 10a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
                       />
                     </svg>
-                    <h3 class="mb-5 text-lg font-normal text-gray-500 dark:text-gray-400">
-                      {props.message}
+                    <h3 className="mb-5 text-lg font-normal text-gray-500 dark:text-gray-400">
+                      {props.mainMessage}
                     </h3>
 
                     <button
-                      onClick={props.toggleModal}
+                      onClick={closeModal}
                       type="button"
-                      class="text-gray-500 bg-white hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-gray-200 rounded-lg border border-gray-200 text-sm font-medium px-5 py-2.5 hover:text-gray-900 focus:z-10 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-500 dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-gray-600"
+                      className="text-gray-500 bg-white hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-gray-200 rounded-lg border border-gray-200 text-sm font-medium px-5 py-2.5 hover:text-gray-900 focus:z-10 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-500 dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-gray-600"
                     >
-                      Nice Trade
+                      {props.buttonMessage}
                     </button>
                   </div>
                 </div>

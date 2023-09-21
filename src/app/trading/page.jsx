@@ -22,6 +22,8 @@ import NavBar from "../../components/NavBar";
 import InfoBar from "@/components/InfoBar";
 import InputTradeValues from "@/components/InputTradeValues";
 import OpenTrades from "@/components/OpenTrades";
+import TradingPoints from "@/components/TradingPoints";
+import Footer from "@/components/Footer";
 
 //import { Profile } from "./Profile";
 
@@ -91,18 +93,26 @@ function TradingPage() {
           <div className="h-screen w-screen py-10 ">
             <div className="h-full w-full flex px-6">
               <TradingViewWidget assetSelect={tradingViewAsset} />
-              <div className="text-white mx-10 border-solid border-4 border-white px-6 py-3">
-                <h1 className="text-white justify-center flex">
+              <div className="text-white mx-10 border-dotted border-4 border-yellow-700 rounded-xl px-6 py-3 flex-box">
+                <h1 className="text-white justify-center flex underline underline-offset-4">
                   Input Trade Parameters
                 </h1>
                 <InputTradeValues assetChange={tradingViewAssetChangeHandler} />
+                <div className="hidden">
+                  <TradingPoints></TradingPoints>
+                </div>
               </div>
             </div>
           </div>
-          <div className="flex flex-center items-center justify-center border-solid border-4 border-white mx-10 my-5 p-10 h-auto w-auto">
+
+          <div className="flex flex-center items-center justify-center border-4 border-yellow-700 rounded-xl border-dotted mx-10 my-5 p-10 h-auto w-auto">
             <OpenTrades />
           </div>
+          <div className="m-4 flex justify-center">
+            <TradingPoints></TradingPoints>
+          </div>
         </div>
+        <Footer />
       </WagmiConfig>
     </div>
   );

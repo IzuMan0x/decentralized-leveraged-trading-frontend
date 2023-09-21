@@ -1,6 +1,7 @@
 "use client";
 import React from "react";
 import NavBar from "@/components/NavBar";
+import Footer from "@/components/Footer";
 
 function Investing() {
   return (
@@ -23,6 +24,7 @@ function Investing() {
           <h1 className="text-white text-4xl justify-center flex py-10"></h1>
         </div>
       </div>
+      <Footer></Footer>
     </div>
   );
 }
