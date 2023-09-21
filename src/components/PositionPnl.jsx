@@ -65,9 +65,8 @@ function PositionPnl(props) {
         setPythOffChainPrice((prev) => ({ ...prev, [priceFeed.id]: price }));
       }
     );
-    console.log("Pyth offchain data is: ", pythOffChainPrice);
   }, []);
-  pythOffChainPrice[pythPriceFeedIdArray[props.pairIndex]];
+  //pythOffChainPrice[pythPriceFeedIdArray[props.pairIndex]];
 
   /* if (price === undefined) {
         return <span style={{ color: "grey" }}>loading...</span>;

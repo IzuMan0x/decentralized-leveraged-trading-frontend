@@ -6,11 +6,6 @@ import {
 } from "@pythnetwork/pyth-evm-js";
 import { timeAgo } from "../utils/utils.jsx";
 
-const currencyFormat = new Intl.NumberFormat("en-US", {
-  style: "currency",
-  currency: "USD",
-});
-
 const PYTH_CONFIG = {
   eth: {
     name: "ETH/USD",
@@ -55,7 +50,6 @@ export function PriceTicker(props) {
         setPythOffChainPrice((prev) => ({ ...prev, [priceFeed.id]: price }));
       }
     );
-    console.log("Pyth offchain data is: ", pythOffChainPrice);
   }, []);
 
   /* if (price === undefined) {

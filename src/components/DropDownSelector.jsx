@@ -50,7 +50,7 @@ function DropDownSelector(props) {
         >
           {pairIndexArray.map((pairIndex) => {
             return (
-              <li>
+              <li key={pairIndex}>
                 <div className="flex items-center pl-2 rounded hover:bg-gray-100 dark:hover:bg-gray-600">
                   <input
                     checked={props.selectedAsset == pairIndex}

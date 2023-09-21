@@ -145,7 +145,9 @@ function OpenTrades() {
                   const userTradeIdForPair = index % 3;
                   if (userTradePositionDetail.leverage != 0) {
                     return (
-                      <tbody>
+                      <tbody
+                        key={`pair-${pairIndex}-trade${userTradeIdForPair}`}
+                      >
                         <tr class="bg-white border-b dark:bg-gray-900 dark:border-gray-700">
                           <th
                             scope="row"

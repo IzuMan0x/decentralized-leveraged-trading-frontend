@@ -34,7 +34,7 @@ function InfoBar(props) {
                 <li>
                   <div
                     class="block py-2 pl-3 pr-4 text-white bg-blue-700 rounded md:bg-transparent md:text-green-700 md:p-0 md:dark:text-green-600 hover:text-green-400"
-                    aria-current="/trading"
+                    aria-current="page"
                   >
                     <TotalLongs pairIndex={selectedAssetIndex}></TotalLongs>
                   </div>

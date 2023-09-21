@@ -29,9 +29,6 @@ const orderBookContractAddress =
   process.env.NEXT_PUBLIC_ORDER_BOOK_CONTRACT_ADDRESS;
 console.log(orderBookContractAddress);
 
-const pythNetworkContractAddress =
-  process.env.NEXT_PUBLIC_PYTH_PRICE_FEED_ADDRESS;
-
 const tradingViewArray = ["ETHUSD", "BTCUSD", "XRPUSD", "MATICUSD", "BNBUSD"];
 const openFeePercentage = 0.00075;
 
