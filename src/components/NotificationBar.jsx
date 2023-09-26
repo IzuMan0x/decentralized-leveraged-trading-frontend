@@ -47,9 +47,9 @@ function NotificationBar() {
             href="https://sepolia.etherscan.io/token/0x40a945CC51F76e1409584242fec3ccAbE2402e88#writeContract"
             target="_blank"
           >
-            <span class="font-medium">Notice!</span> You can mint test tokens
-            HERE. Just connect your wallet and write to the "mint" function the
-            amount of tokens you would like to mint!
+            <span className="font-medium">Notice!</span> You can mint test
+            tokens HERE. Just connect your wallet and write to the mint function
+            the amount of tokens you would like to mint!
           </a>
         </div>
       </div>
