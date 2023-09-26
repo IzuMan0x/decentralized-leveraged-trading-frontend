@@ -298,14 +298,20 @@ function InputTradeValues(props) {
       )}
       <form onSubmit={initiateTradeHandler}>
         <div className="grid gap-6 mb-6 md:grid-cols-2">
-          <DropDownSelector
-            toggleAssetPairList={toggleAssetPairListHandler}
-            selectedAsset={selectedAsset}
-            selectedAssetSymbol={selectedAssetSymbol}
-            selectedAssetHandler={selectedAssetHandler}
-            dropDownListHidden={assetListHidden}
-            hideList={closeAssetDropDownListHandler}
-          />
+          <h1 className="col-span-2 block m-2 text-sm font-medium text-white">
+            Selected Trading Pair
+          </h1>
+          <div className="col-span-2 flex w-full">
+            <DropDownSelector
+              toggleAssetPairList={toggleAssetPairListHandler}
+              selectedAsset={selectedAsset}
+              selectedAssetSymbol={selectedAssetSymbol}
+              selectedAssetHandler={selectedAssetHandler}
+              dropDownListHidden={assetListHidden}
+              hideList={closeAssetDropDownListHandler}
+            />
+          </div>
+
           <div>
             <label
               for="collateral_amount"
@@ -366,19 +372,19 @@ function InputTradeValues(props) {
         ) : (
           <button
             type="submit"
-            className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+            className="flex text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
           >
             Open Trade
           </button>
         )}
 
-        <button
+        {/*  <button
           type="button"
           onClick={() => mint?.()}
           className="text-white my-2 mx-2 bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
         >
           Mint Test Collateral
-        </button>
+        </button> */}
       </form>
       <div className="flex text-white mx-10 border-solid border-4 border-white px-6 py-3 my-4">
         <h1 className="text-white flex-shrink">

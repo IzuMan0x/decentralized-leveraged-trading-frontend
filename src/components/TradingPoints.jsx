@@ -16,8 +16,8 @@ function TradingPoints() {
       </h2>
       <ul class="max-w-md space-y-1 text-gray-400 list-disc list-inside">
         <li>
-          Mint Collateral button will mint 10,000 tokens to play around with!!
-          😜
+          Mint test Collateral using Etherscan (see the notice at the top of the
+          page)!! 😜
         </li>
         <li>Please report any bugs in the Discord Channel</li>
         <li>Thank you for your support!! 🙏🏻</li>

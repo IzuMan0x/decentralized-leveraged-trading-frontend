@@ -23,7 +23,7 @@ function Footer() {
             </a>
             <ul className="flex flex-wrap items-center mb-6 text-sm font-medium text-gray-400 sm:mb-0">
               <li>
-                <a href="/trade" className="mr-4 hover:underline md:mr-6 ">
+                <a href="/trading" className="mr-4 hover:underline md:mr-6 ">
                   Trade
                 </a>
               </li>
@@ -43,7 +43,7 @@ function Footer() {
               </li>
               <li>
                 <a
-                  href="https://discord.gg/J6q62sQF"
+                  href="https://discord.gg/ra4gsDKy7Z"
                   className="hover:underline"
                   target="_blank"
                 >
