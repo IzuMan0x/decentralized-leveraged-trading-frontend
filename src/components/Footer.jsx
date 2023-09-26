@@ -37,7 +37,7 @@ function Footer() {
                 </a>
               </li>
               <li>
-                <a href="/invest" className="mr-4 hover:underline md:mr-6 ">
+                <a href="/invest" className="mr-4 hover:underline md:mr-6">
                   Invest(ICO)
                 </a>
               </li>

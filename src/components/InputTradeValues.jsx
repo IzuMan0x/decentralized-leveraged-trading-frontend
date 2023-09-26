@@ -377,14 +377,6 @@ function InputTradeValues(props) {
             Open Trade
           </button>
         )}
-
-        {/*  <button
-          type="button"
-          onClick={() => mint?.()}
-          className="text-white my-2 mx-2 bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
-        >
-          Mint Test Collateral
-        </button> */}
       </form>
       <div className="flex text-white mx-10 border-solid border-4 border-white px-6 py-3 my-4">
         <h1 className="text-white flex-shrink">
