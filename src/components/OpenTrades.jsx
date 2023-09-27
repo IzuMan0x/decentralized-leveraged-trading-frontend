@@ -110,110 +110,104 @@ function OpenTrades() {
   ); */
 
   return (
-    <>
-      <div>
-        <h1 className="text-white flex justify-center">Open Trades</h1>
-        <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
-          <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
-            <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
-              <tr>
-                <th scope="col" class="px-6 py-3">
-                  Asset Pair
-                </th>
-                <th scope="col" className="px-6 py-3">
-                  Long/Short
-                </th>
-                <th scope="col" class="px-6 py-3">
-                  Open Price
-                </th>
-                <th scope="col" class="px-6 py-3">
-                  Current Price
-                </th>
-                <th scope="col" class="px-6 py-3">
-                  PNL
-                </th>
-                <th scope="col" class="px-6 py-3">
-                  Close Trade
-                </th>
-              </tr>
-            </thead>
+    <div className="overflow-x-auto">
+      <h1 className="text-white flex justify-center">Open Trades</h1>
 
-            {mounted && !allUserOpenTradesIsError
-              ? allUserOpenTrades &&
-                allUserOpenTrades.map((userTradePositionDetail, index) => {
-                  const pairIndex = userTradePositionDetail.pairNumber;
-                  const userTradeIdForPair = index % 3;
-                  if (userTradePositionDetail.leverage != 0) {
-                    return (
-                      <tbody
-                        key={`pair-${pairIndex}-trade${userTradeIdForPair}`}
-                      >
-                        <tr class="bg-white border-b dark:bg-gray-900 dark:border-gray-700">
-                          <th
-                            scope="row"
-                            class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white"
-                          >
-                            {userTradePositionDetail
-                              ? assetSymbolArray[
-                                  userTradePositionDetail.pairNumber
-                                ]
-                              : "loading..."}
-                          </th>
-                          <td
-                            className={`px-6 py-4 ${
-                              userTradePositionDetail.longShort == 0
-                                ? "text-green-700"
-                                : "text-red-600"
-                            }`}
-                          >
-                            {
-                              longShortSymbolArray[
-                                userTradePositionDetail.longShort
+      <div class="relative shadow-md">
+        <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400 rounded-lg">
+          <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+            <tr>
+              <th scope="col" class="px-6 py-3">
+                Asset Pair
+              </th>
+              <th scope="col" className="px-6 py-3">
+                Long/Short
+              </th>
+              <th scope="col" class="px-6 py-3">
+                Open Price
+              </th>
+              <th scope="col" class="px-6 py-3">
+                Current Price
+              </th>
+              <th scope="col" class="px-6 py-3">
+                PNL
+              </th>
+              <th scope="col" class="px-6 py-3">
+                Close Trade
+              </th>
+            </tr>
+          </thead>
+
+          {mounted && !allUserOpenTradesIsError
+            ? allUserOpenTrades &&
+              allUserOpenTrades.map((userTradePositionDetail, index) => {
+                const pairIndex = userTradePositionDetail.pairNumber;
+                const userTradeIdForPair = index % 3;
+                if (userTradePositionDetail.leverage != 0) {
+                  return (
+                    <tbody key={`pair-${pairIndex}-trade${userTradeIdForPair}`}>
+                      <tr class="bg-white border-b dark:bg-gray-900 dark:border-gray-700">
+                        <th
+                          scope="row"
+                          class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white"
+                        >
+                          {userTradePositionDetail
+                            ? assetSymbolArray[
+                                userTradePositionDetail.pairNumber
                               ]
+                            : "loading..."}
+                        </th>
+                        <td
+                          className={`px-6 py-4 ${
+                            userTradePositionDetail.longShort == 0
+                              ? "text-green-700"
+                              : "text-red-600"
+                          }`}
+                        >
+                          {
+                            longShortSymbolArray[
+                              userTradePositionDetail.longShort
+                            ]
+                          }
+                        </td>
+                        <td class="px-6 py-4">
+                          $
+                          {userTradePositionDetail
+                            ? formatUnits(userTradePositionDetail.openPrice, 5)
+                            : "loading..."}
+                        </td>
+                        <td class="px-6 py-4">
+                          <PriceTicker
+                            pairIndex={userTradePositionDetail?.pairNumber}
+                          />
+                        </td>
+                        <td class="px-6 py-4">
+                          <PositionPnl
+                            pairIndex={userTradePositionDetail.pairNumber}
+                            collateral={
+                              userTradePositionDetail.collateralAfterFee
                             }
-                          </td>
-                          <td class="px-6 py-4">
-                            $
-                            {userTradePositionDetail
-                              ? formatUnits(
-                                  userTradePositionDetail.openPrice,
-                                  5
-                                )
-                              : "loading..."}
-                          </td>
-                          <td class="px-6 py-4">
-                            <PriceTicker
-                              pairIndex={userTradePositionDetail?.pairNumber}
-                            />
-                          </td>
-                          <td class="px-6 py-4">
-                            <PositionPnl
-                              pairIndex={userTradePositionDetail.pairNumber}
-                              collateral={
-                                userTradePositionDetail.collateralAfterFee
-                              }
-                              leverage={userTradePositionDetail.leverage}
-                              openPrice={userTradePositionDetail.openPrice}
-                              orderType={userTradePositionDetail.longShort}
-                              openTradesIdForPair={userTradeIdForPair}
-                            />
-                          </td>
-                          <td class="px-6 py-4">
-                            <CloseTrade
-                              id={userTradeIdForPair}
-                              value={pairIndex}
-                            />
-                          </td>
-                        </tr>
-                      </tbody>
-                    );
-                  }
-                })
-              : null}
-          </table>
-        </div>
+                            leverage={userTradePositionDetail.leverage}
+                            openPrice={userTradePositionDetail.openPrice}
+                            orderType={userTradePositionDetail.longShort}
+                            openTradesIdForPair={userTradeIdForPair}
+                          />
+                        </td>
+                        <td class="px-6 py-4">
+                          <CloseTrade
+                            id={userTradeIdForPair}
+                            value={pairIndex}
+                          />
+                        </td>
+                      </tr>
+                    </tbody>
+                  );
+                }
+              })
+            : null}
+        </table>
       </div>
-    </>
+    </div>
   );
 }
 

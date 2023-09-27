@@ -102,13 +102,13 @@ function TradingPage() {
                 </div>
               </div>
             </div>
-            <div className="col-span-1">
+            <div className="lg:col-span-1 md:col-span-3">
               <div>
                 <h1 className="text-white justify-center flex underline underline-offset-4 mb-1">
                   Input Trade Parameters
                 </h1>
-                <div className="border-solid border-4 border-gray-700 rounded-xl shadow-2xl shadow-slate-700 mx-4 flex">
-                  <div className="h-full w-full flex px-6">
+                <div className="border-solid border-4 border-gray-700 rounded-xl shadow-2xl shadow-slate-700 mx-4 flex ">
+                  <div className="h-full w-full flex px-6 justify-center">
                     <InputTradeValues
                       assetChange={tradingViewAssetChangeHandler}
                     />
