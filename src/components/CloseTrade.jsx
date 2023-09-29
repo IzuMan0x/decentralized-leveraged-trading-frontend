@@ -1,125 +1,105 @@
-import React from "react";
-import {
-  usePrepareContractWrite,
-  useContractRead,
-  useContractWrite,
-} from "wagmi";
-import mockPythContractAbi from "../assets/mock-pyth-abi.json";
-import orderBookAbi from "../assets/OrderBook.json";
 import TradeModal from "./TradeModal";
-
-//This setup worked at least once 🧐
+import React, { useState } from "react";
+import orderBookAbi from "../assets/OrderBook.json";
+import pythNetworkAbi from "../assets/pythnetwork-abi.json";
+import { readContract, prepareWriteContract, writeContract } from "@wagmi/core";
+import { EvmPriceServiceConnection } from "@pythnetwork/pyth-evm-js";
 
 const orderBook = {
   address: process.env.NEXT_PUBLIC_ORDER_BOOK_CONTRACT_ADDRESS,
   abi: orderBookAbi.abi,
 };
-const pythPriceAddress = "0x8464135c8f25da09e49bc8782676a84730c318bc";
+
+const pythNetwork = {
+  abi: pythNetworkAbi,
+  address: process.env.NEXT_PUBLIC_PYTH_CONTRACT_ADDRESS,
+};
+const pythPriceFeedIdArray = [
+  "0xca80ba6dc32e08d06f1aa886011eed1d77c77be9eb761cc10d72b7d0a2fd57a6",
+];
 
 function CloseTrade(props) {
-  ///////////////////////
-  //Testing Features////
-  //////////////////////
-  const ETH_PRICE_ID =
-    "0x000000000000000000000000000000000000000000000000000000000000abcd";
-  const BTC_PRICE_ID =
-    "0x0000000000000000000000000000000000000000000000000000000000001234";
-  const ethPrice = 1000;
-  const btcPrice = 26000;
-  const blockTime = 1692955175;
-  //manually setting the update parameters
-  //In production these will come from the api endpoint or wormhole, but here we create it ourselves
-  const mockPythArgsArray = [
-    ETH_PRICE_ID,
-    ethPrice * 1e5,
-    10 * 1e5,
-    -5,
-    ethPrice * 1e5,
-    10 * 1e5,
-    blockTime,
-  ];
+  const [closeOrderLoading, setCloseOrderLoading] = useState(false);
 
-  const {
-    data: mockPythUpdateDataArray,
-    error: mockPythUpdateDataArrayError,
-    isLoading: mockPythUpdateDataArrayIsLoading,
-  } = useContractRead?.({
-    address: pythPriceAddress,
-    abi: mockPythContractAbi.abi,
-    args: mockPythArgsArray,
-    functionName: "createPriceFeedUpdateData",
-
-    onSuccess(data) {
-      console.log("Success on getting mock pyth update data", data);
-    },
-  });
-  console.log(
-    "mockPythUpdateDataArray from close trade",
-    mockPythUpdateDataArray
-  );
-
-  console.log("pyth price feed address is", props.address);
-  ////////////////////////
-  //above is for local testing only the actual data will come from the pyth api
-  ////////////////////////
-
-  const {
-    config: orderCloseConfig,
-    data: orderClosePrepareData,
-    error: orderCloseError,
-    isError: orderCloseIsError,
-    status: orderClosePrepareStatus,
-  } = usePrepareContractWrite({
-    address: orderBook.address,
-    abi: orderBook.abi,
-    functionName: "orderClose",
-    //The follow prevents throwing an error on the initial load when the array is undefined
-    args: [props.value, props.id, [mockPythUpdateDataArray]],
-
-    value: 1,
-    onSuccess(data) {
-      console.log("Success", data.result);
-    },
-  });
-  console.log("orderCloseIsError is in error", orderCloseIsError);
-  console.log("orderCloseConfig is:", orderCloseConfig);
-  console.log("orderClosePrepareData is: ", orderClosePrepareData);
-  console.log("Order close prepare status", orderClosePrepareStatus);
-  console.log("orderClose error is close: ", orderCloseError);
-  const {
-    data: orderCloseData,
-    error: orderCloseWriteError,
-    isSuccess: orderCloseSuccess,
-    isLoading: orderCloseIsLoading,
-    status: orderCloseWriteStatus,
-    write: orderClose,
-  } = useContractWrite(orderCloseConfig);
-  console.log("Order Close write data 1245", orderCloseData);
-  console.log("order close write is loading: ", orderCloseIsLoading);
-  console.log("write order close error is: ", orderCloseWriteError);
-  console.log("Order close write status is: ", orderCloseWriteStatus);
-
-  const closeTradeHandler = (event) => {
+  const closeTradeHandler = async () => {
     console.log("From CloseTrade", props.value, props.id);
-    props.closeUserTrade(orderCloseConfig);
+
+    setCloseOrderLoading(true);
+    setTimeout(() => {
+      setCloseOrderLoading(false);
+      console.log("Closing position timed Out after 10 seconds");
+    }, 10000);
+    const pythPriceService = new EvmPriceServiceConnection(
+      "https://xc-testnet.pyth.network"
+    );
+
+    const priceFeedUpdateData = await pythPriceService.getPriceFeedsUpdateData([
+      pythPriceFeedIdArray[props.value],
+    ]);
+    const pythUpdateFee = await readContract({
+      address: pythNetwork.address,
+      abi: pythNetworkAbi.abi,
+      functionName: "getUpdateFee",
+      args: [priceFeedUpdateData],
+    });
+
+    const prepareMarketOrderConfig = await prepareWriteContract({
+      address: orderBook.address,
+      abi: orderBook.abi,
+      functionName: "orderClose",
+      args: [props.value, props.id, priceFeedUpdateData],
+      value: pythUpdateFee,
+    }).catch((err) => setCloseOrderLoading(false));
+
+    const orderCloseHash = await writeContract(prepareMarketOrderConfig).catch(
+      (err) => {
+        setCloseOrderLoading(false);
+        console.log("Closing position error is:", err);
+      }
+    );
+
+    if (orderCloseHash != undefined) {
+      setCloseOrderLoading(false);
+    }
   };
 
   return (
     <>
-      {orderCloseData && (
+      {false && (
         <TradeModal
           mainMessage={"Successfully closed a trade"}
           buttonMessage={"Shut it down!!"}
         ></TradeModal>
       )}
-
-      <div
-        className="hover:cursor-pointer text-blue-500 hover:text-red-500"
-        onClick={() => orderClose?.()}
-        value={props.value}
-      >
-        CloseTrade
-      </div>
+      {closeOrderLoading ? (
+        <div role="status">
+          <svg
+            aria-hidden="true"
+            class="w-8 h-8 mr-2 text-gray-200 animate-spin dark:text-gray-600 fill-blue-600"
+            viewBox="0 0 100 101"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z"
+              fill="currentColor"
+            />
+            <path
+              d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z"
+              fill="currentFill"
+            />
+          </svg>
+          <span className="sr-only">Loading...</span>
+        </div>
+      ) : (
+        <div
+          className="hover:cursor-pointer text-blue-500 hover:text-red-500"
+          onClick={closeTradeHandler}
+          value={props.value}
+        >
+          CloseTrade
+        </div>
+      )}
     </>
   );
 }

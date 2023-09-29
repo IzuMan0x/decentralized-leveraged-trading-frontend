@@ -31,7 +31,7 @@ function TotalShortsBorrowFee(props) {
         : `%${(
             (-1 * formatUnits?.(borrowFeeRate, 7) + baseBorrowFee) *
             100
-          ).toFixed(6)}`
+          ).toFixed(4)}`
     }/hour`}</div>
   );
 }

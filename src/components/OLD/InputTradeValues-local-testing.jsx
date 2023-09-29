@@ -11,16 +11,16 @@ import {
 import { parseEther, formatUnits, parseUnits, isBytes } from "viem";
 /* Contract abi location  **Note the ABI needs to be an array to be used with viem or wagmi*/
 //production
-import orderBookAbi from "../assets/OrderBook.json";
-import pythNetworkAbi from "../assets/pythnetwork-abi.json";
+import orderBookAbi from "../../assets/OrderBook.json";
+import pythNetworkAbi from "../../assets/pythnetwork-abi.json";
 //testing
-import mockPythContractAbi from "../assets/mock-pyth-abi.json";
-import { abi as erc20MockAbi } from "../assets/ERC20Mock-abi.json";
-import { PriceTicker } from "./PythPriceText";
-import LongShortToggle from "./LongShortToggle";
-import TradeModal from "./TradeModal";
-import OpenTradeModal from "./OpenTradeModal";
-import DropDownSelector from "./DropDownSelector";
+import mockPythContractAbi from "../../assets/mock-pyth-abi.json";
+import { abi as erc20MockAbi } from "../../assets/ERC20Mock-abi.json";
+import { PriceTicker } from "../PythPriceText";
+import LongShortToggle from "../LongShortToggle";
+import TradeModal from "../TradeModal";
+import OpenTradeModal from "../OpenTradeModal";
+import DropDownSelector from "../DropDownSelector";
 
 //note we need to prefix the env variables with NEXT_PUBLIC to use them on the browser side
 const orderBookContractAddress =
@@ -183,14 +183,8 @@ function InputTradeValues(props) {
 
   //during testing we will pass the mockPythUpdateArray to the marketOrdder function
 
-  const toggleOrderTypeHandler = () => {
-    setOrderType((previous) => {
-      if (previous == 0) {
-        return 1;
-      } else {
-        return 0;
-      }
-    });
+  const toggleOrderTypeHandler = (event) => {
+    setOrderType(event.target.value);
 
     console.log("ordertype is: ", orderType);
   };

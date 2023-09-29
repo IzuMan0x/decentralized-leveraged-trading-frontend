@@ -10,6 +10,7 @@ function InfoBar(props) {
   const mounted = useIsMounted();
   const [selectedAssetIndex, setSelectedAssetIndex] = useState(0);
   const [selectedAssetSymbol, setSelectedAssetSymbol] = useState("");
+
   useEffect(() => {
     setSelectedAssetIndex(props.assetSelectIndex);
     setSelectedAssetSymbol(props.assetSelectSymbol);

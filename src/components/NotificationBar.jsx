@@ -48,8 +48,9 @@ function NotificationBar() {
             target="_blank"
           >
             <span className="font-medium">Notice!</span> You can mint test
-            tokens HERE. Just connect your wallet and write to the mint function
-            the amount of tokens you would like to mint!
+            tokens on Etherscan just click this notification bar. Just connect
+            your wallet and write to the mint function the amount of tokens you
+            would like to mint!
           </a>
         </div>
       </div>

@@ -108,8 +108,8 @@ function PositionPnl(props) {
                       .getPriceAsNumberUnchecked()
                       .toFixed(2)
                   ) -
-                    Number(formatUnits(props.openPrice, 5))) /
-                    Number(formatUnits(props.openPrice, 5))) *
+                    Number(formatUnits(props.openPrice, 8))) /
+                    Number(formatUnits(props.openPrice, 8))) *
                     Number(formatUnits(props.leverage, 6)) *
                     Number(formatUnits(props.collateral, 18))
               )
@@ -120,8 +120,8 @@ function PositionPnl(props) {
                       .getPriceAsNumberUnchecked()
                       .toFixed(2)
                   ) -
-                    Number(formatUnits(props.openPrice, 5))) /
-                    Number(formatUnits(props.openPrice, 5))) *
+                    Number(formatUnits(props.openPrice, 8))) /
+                    Number(formatUnits(props.openPrice, 8))) *
                     Number(formatUnits(props.leverage, 6)) *
                     Number(formatUnits(props.collateral, 18))
               )}

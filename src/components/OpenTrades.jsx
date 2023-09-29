@@ -173,7 +173,7 @@ function OpenTrades() {
                         <td class="px-6 py-4">
                           $
                           {userTradePositionDetail
-                            ? formatUnits(userTradePositionDetail.openPrice, 5)
+                            ? formatUnits(userTradePositionDetail.openPrice, 8)
                             : "loading..."}
                         </td>
                         <td class="px-6 py-4">

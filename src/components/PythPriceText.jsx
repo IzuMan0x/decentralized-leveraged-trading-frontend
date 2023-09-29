@@ -62,13 +62,14 @@ export function PriceTicker(props) {
   } else {
     const now = props.currentTime.getTime() / 1000; */
 
-  console.log("Pyth offchain data is : ", pythOffChainPrice);
-  console.log("ordertype is: ", props.orderType);
+  /*  console.log("Pyth offchain data is : ", pythOffChainPrice);
+  console.log("ordertype is: ", props.orderType); */
 
   return (
     <>
       {props.estimateTradeOpenPrice ? (
-        <div>
+        <span>
+          {" "}
           {pythOffChainPrice === undefined ||
           pythOffChainPrice[
             pythPriceFeedIdArray[props.estimateTradeOpenPrice]
@@ -95,13 +96,14 @@ export function PriceTicker(props) {
                     ].getConfAsNumberUnchecked())
             )
           )}{" "}
-        </div>
+        </span>
       ) : (
-        <div>
+        <span>
+          {" "}
           {pythOffChainPrice === undefined ||
           pythOffChainPrice[pythPriceFeedIdArray[props.pairIndex]] ===
             undefined ? (
-            <text>loading...</text>
+            <span>loading...</span>
           ) : (
             currencyFormat.format(
               pythOffChainPrice[pythPriceFeedIdArray[props.pairIndex]]
@@ -109,7 +111,7 @@ export function PriceTicker(props) {
                 .toFixed(2)
             )
           )}
-        </div>
+        </span>
       )}
     </>
   );

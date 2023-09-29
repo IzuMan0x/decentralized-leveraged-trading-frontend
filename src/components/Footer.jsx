@@ -1,8 +1,5 @@
 import React from "react";
-import Link from "next/link";
 import Image from "next/image";
-import { Web3Button } from "@web3modal/react";
-import { useNetwork, useSwitchNetwork } from "wagmi";
 import logo from "../assets/website-logo.png";
 
 function Footer() {

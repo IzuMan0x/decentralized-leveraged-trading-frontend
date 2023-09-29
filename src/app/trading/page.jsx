@@ -8,14 +8,17 @@ import {
   w3mProvider,
 } from "@web3modal/ethereum";
 import { Web3Modal } from "@web3modal/react";
-import { configureChains, createConfig, sepolia, WagmiConfig } from "wagmi";
+import { configureChains, createConfig, WagmiConfig } from "wagmi";
 import {
   arbitrum,
   mainnet,
   polygon,
   zkSync,
   zkSyncTestnet,
+  sepolia,
 } from "wagmi/chains";
+import { publicProvider } from "wagmi/providers/public";
+import { alchemyProvider } from "wagmi/providers/alchemy";
 import WalletConnectModal from "../../components/WalletConnectModal";
 import NotificationBar from "@/components/NotificationBar";
 import TradingViewWidget from "../../components/TradingViewWidget";
@@ -26,7 +29,7 @@ import OpenTrades from "@/components/OpenTrades";
 import TradingPoints from "@/components/TradingPoints";
 import Footer from "@/components/Footer";
 
-//import { Profile } from "./Profile";
+const alchemyApiKey = process.env.NEXT_PUBLIC_ALCHEMY_API_KEY;
 
 /* Defining the localchain becasue the provided localchain from WAGMI has a different Id of 1337 */
 const localhost = {
@@ -48,7 +51,7 @@ const localhost = {
   },
 };
 
-const chains = [
+/* const chains = [
   arbitrum,
   mainnet,
   polygon,
@@ -56,11 +59,15 @@ const chains = [
   zkSync,
   zkSyncTestnet,
   localhost,
-];
+]; */
+const chains = [sepolia];
 
 const projectId = "b95db88f2294ab412d2b370774f19d3e";
 
-const { publicClient } = configureChains(chains, [w3mProvider({ projectId })]);
+const { publicClient } = configureChains(chains, [
+  alchemyProvider({ apiKey: alchemyApiKey }),
+  w3mProvider({ projectId }),
+]);
 const wagmiConfig = createConfig({
   autoConnect: true,
   connectors: w3mConnectors({ projectId, chains }),
@@ -104,10 +111,7 @@ function TradingPage() {
             </div>
             <div className="lg:col-span-1 md:col-span-3">
               <div>
-                <h1 className="text-white justify-center flex underline underline-offset-4 mb-1">
-                  Input Trade Parameters
-                </h1>
-                <div className="border-solid border-4 border-gray-700 rounded-xl shadow-2xl shadow-slate-700 mx-4 flex ">
+                <div className="border-solid border-4 border-gray-700 rounded-xl shadow-2xl shadow-slate-700 mx-4 my-10 flex ">
                   <div className="h-full w-full flex px-6 justify-center">
                     <InputTradeValues
                       assetChange={tradingViewAssetChangeHandler}
@@ -118,7 +122,7 @@ function TradingPage() {
             </div>
           </div>
 
-          <div className="flex flex-center items-center justify-center border-4 border-gray-700 rounded-xl border-solid shadow-slate-700 mx-4 my-5 p-10 h-auto w-auto">
+          <div className="flex flex-center items-center justify-center border-4 border-gray-700 rounded-xl border-solid shadow-slate-700 mx-4 p-10 h-auto w-auto">
             <OpenTrades />
           </div>
           <div className="m-4 flex justify-center">
