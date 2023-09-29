@@ -8,7 +8,7 @@ import orderBookAbi from "../../assets/OrderBook.json";
 import TradeModal from "../TradeModal";
 
 import React, { useState } from "react";
-import orderBookAbi from "../../assets/OrderBook.json";
+
 import pythNetworkAbi from "../../assets/pythnetwork-abi.json";
 
 import { parseEther, formatUnits, parseUnits } from "viem";
