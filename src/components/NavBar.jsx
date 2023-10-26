@@ -23,7 +23,7 @@ function NavBar() {
             BetterTrade.me
           </span>
         </a>
-        <div className="flex md:order-2">
+        <div className="flex md:order-2 m-2">
           <Web3Button />
         </div>
         <div

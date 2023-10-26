@@ -19,15 +19,15 @@ import {
 } from "wagmi/chains";
 import { publicProvider } from "wagmi/providers/public";
 import { alchemyProvider } from "wagmi/providers/alchemy";
-import WalletConnectModal from "../../components/WalletConnectModal";
+import WalletConnectModal from "../../../components/WalletConnectModal";
 import NotificationBar from "@/components/NotificationBar";
-import TradingViewWidget from "../../components/TradingViewWidget";
-import NavBar from "../../components/NavBar";
+import TradingViewWidget from "../../../components/TradingViewWidget";
+import NavBar from "../../../components/NavBar";
 import InfoBar from "@/components/InfoBar";
-import InputTradeValues from "@/components/InputTradeValues";
-import OpenTrades from "@/components/OpenTrades";
+import InputTradeValues from "@/components/mock-development/MOCKInputTradeValues";
+import OpenTrades from "@/components/mock-development/MOCKOpenTrades";
+import MOCKOpenLimitOrders from "@/components/mock-development/MOCKOpenLimitOrders";
 import TradingPoints from "@/components/TradingPoints";
-
 import Footer from "@/components/Footer";
 
 const alchemyApiKey = process.env.NEXT_PUBLIC_ALCHEMY_API_KEY;
@@ -125,6 +125,9 @@ function TradingPage() {
 
           <div className="flex flex-center items-center justify-center border-4 border-gray-700 rounded-xl border-solid shadow-slate-700 mx-4 p-10 h-auto w-auto">
             <OpenTrades />
+          </div>
+          <div className="flex flex-center items-center justify-center border-4 border-gray-700 rounded-xl border-solid shadow-slate-700 mx-4 p-10 h-auto w-auto">
+            <MOCKOpenLimitOrders />
           </div>
           <div className="m-4 flex justify-center">
             <TradingPoints></TradingPoints>

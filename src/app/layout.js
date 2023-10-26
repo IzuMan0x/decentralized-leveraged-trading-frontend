@@ -1,10 +1,6 @@
 import "./globals.css";
 import { Inter } from "next/font/google";
 import logo from "../assets/website-logo.png";
-import Image from "next/image";
-import Head from "next/head";
-import Link from "next/link";
-//import { Helmet } from "react-helmet";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -26,7 +22,11 @@ export default function RootLayout({ children }) {
           sizes="<generated>"
         ></link>
       </head>
-      <body className={inter.className}>{children}</body>
+
+      <body className={inter.className}>
+        <h1>YO this is here</h1>
+        {children}
+      </body>
     </html>
   );
 }

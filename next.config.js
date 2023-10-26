@@ -5,9 +5,3 @@ const nextConfig = {
 };
 
 module.exports = nextConfig;
-
-/* exportPathMap: function () {
-    return {
-      "/": { page: "/" },
-    };
-  }, */
