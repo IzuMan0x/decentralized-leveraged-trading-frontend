@@ -5,7 +5,7 @@ import Footer from "@/components/Footer";
 import LeaderBoard from "./LeaderBoard";
 import { useAccount } from "wagmi";
 
-function page() {
+function Page() {
   //connnected wallets address
   const { address } = useAccount();
   console.log(address);
@@ -22,4 +22,4 @@ function page() {
   );
 }
 
-export default page;
+export default Page;
