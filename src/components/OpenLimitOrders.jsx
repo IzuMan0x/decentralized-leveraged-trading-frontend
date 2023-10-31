@@ -1,41 +1,26 @@
 "use client";
-import React, { useEffect, useState } from "react";
-
-import {
-  useAccount,
-  usePrepareContractWrite,
-  useContractWrite,
-  useContractRead,
-  useContractReads,
-} from "wagmi";
-import { watchContractEvent } from "@wagmi/core";
+import React from "react";
+import { useAccount, useContractRead } from "wagmi";
 /* Contract abi location  **Note the ABI needs to be an array to be used with viem or wagmi*/
-import orderBookAbi from "../../assets/OrderBook.json";
-import mockPythContractAbi from "../../assets/mock-pyth-abi.json";
-import { abi as pythnetworkAbi } from "../../assets/pythnetwork-abi.json";
-import { parseEther, formatUnits } from "viem";
-import { PriceTicker } from "../PythPriceText";
-import MOCKCloseLimitOrder from "./MOCKCloseLimitOrder";
-import PositionPnl from "../PositionPnl";
+import orderBookAbi from "../assets/OrderBook.json";
+import { formatUnits } from "viem";
+import { PriceTicker } from "./PythPriceText";
 import { useIsMounted } from "@/hooks/useIsMounted";
-import dotenv from "dotenv";
-
-const orderBookContractAddress =
-  process.env.NEXT_PUBLIC_ORDER_BOOK_CONTRACT_ADDRESS;
+import CloseLimitOrder from "./buttons/CloseLimitOrder";
 
 const orderBook = {
   address: process.env.NEXT_PUBLIC_ORDER_BOOK_CONTRACT_ADDRESS,
   abi: orderBookAbi.abi,
 };
 
-function MOCKOpenLimitOrders() {
+function OpenLimitOrders() {
   //This hook is to prevent the hydration error
   const mounted = useIsMounted();
   const { address, isConnected } = useAccount();
   ////////////////////
   // Contract Reads//
   ///////////////////
-  //currently need to reload the page to get the open trades to show up
+
   const assetArray = [0, 1, 2, 3, 4];
   const assetSymbolArray = [
     "ETH/USD",
@@ -126,14 +111,14 @@ function MOCKOpenLimitOrders() {
                             ? formatUnits(userLimitOrderDetails.targetPrice, 8)
                             : "loading..."}
                         </td>
-                        <td className="px-6 py-4">
+                        <td className="px-6 py-4 text-green-700">
                           <PriceTicker
                             pairIndex={userLimitOrderDetails?.pairIndex}
                           />
                         </td>
 
                         <td className="px-6 py-4">
-                          <MOCKCloseLimitOrder
+                          <CloseLimitOrder
                             id={userTradeIdForPair}
                             value={pairIndex}
                           />
@@ -150,4 +135,4 @@ function MOCKOpenLimitOrders() {
   );
 }
 
-export default MOCKOpenLimitOrders;
+export default OpenLimitOrders;

@@ -17,6 +17,7 @@ function TotalLongsBorrowFee(props) {
     data: borrowFeeRate,
     isError,
     isLoading,
+    error,
   } = useContractRead({
     address: orderBook.address,
     abi: orderBook.abi,
@@ -24,6 +25,7 @@ function TotalLongsBorrowFee(props) {
     args: [props.pairIndex],
     watch: true,
   });
+  console.log("getting long borrow rate error is:", error);
   return (
     <div>{`Longs Borrow Fee: ${
       borrowFeeRate == undefined || isLoading || isError

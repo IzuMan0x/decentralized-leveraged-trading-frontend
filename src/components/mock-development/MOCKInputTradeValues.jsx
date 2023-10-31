@@ -174,7 +174,7 @@ function InputTradeValues(props) {
     setSelectedAsset(event.target.value);
     setSelectedAssetSymbol(tradingViewArray[event.target.value]);
     props.assetChange(tradingViewArray[event.target.value], event.target.value);
-    setAssetListHidden(true);
+
     console.log("Selected Asset is: ", event.target.value);
   };
   const toggleLimitOrder = (event) => {
@@ -239,8 +239,6 @@ function InputTradeValues(props) {
                   selectedAsset={selectedAsset}
                   selectedAssetSymbol={selectedAssetSymbol}
                   selectedAssetHandler={selectedAssetHandler}
-                  dropDownListHidden={assetListHidden}
-                  hideList={closeAssetDropDownListHandler}
                 />
               </div>
             </div>
@@ -315,10 +313,12 @@ function InputTradeValues(props) {
       )}
 
       <TradeDetails
+        limitOrder={limitOrder}
         orderType={orderType}
         selectedAsset={selectedAsset}
         collateral={collateralInput}
         leverage={leverageAmount}
+        limitPrice={limitPrice}
       />
     </div>
   );

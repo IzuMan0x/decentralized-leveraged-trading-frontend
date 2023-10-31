@@ -1,5 +1,7 @@
 import React from "react";
 
+import { useAssetList, useUpdateAssetList } from "./DropDownListContext";
+
 const pairIndexArray = [0, 1, 2, 3, 4];
 const pairSymbolsArray = [
   "$ETH/USD",
@@ -10,13 +12,23 @@ const pairSymbolsArray = [
 ];
 
 function DropDownSelector(props) {
+  const hider = props.hideAssetList;
+  //console.log("from the selector", hider);
+
+  const assetListVisible = useAssetList();
+  const updateAssetListVisability = useUpdateAssetList();
+
+  const hideListHandler = () => {
+    props.hideAssetList(!props.isAssetListHidden);
+  };
+  console.log("from the selector", props.isAssetListHidden);
   return (
     <div className="relative w-full h-full">
       <button
         id="dropdownSearchButton"
-        className="text-white my-3 bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+        className="z-100 text-white my-3 bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
         type="button"
-        onClick={props.toggleAssetPairList}
+        onClick={() => updateAssetListVisability(!assetListVisible)}
       >
         {props.selectedAssetSymbol === undefined ||
         props.selectedAssetSymbol === 0
@@ -41,7 +53,7 @@ function DropDownSelector(props) {
       <div
         id="dropdownSearch"
         className={`z-10 ${
-          props.dropDownListHidden && "hidden"
+          assetListVisible ? "hidden" : undefined
         } bg-white rounded-lg shadow w-60 dark:bg-gray-700 absolute`}
       >
         <ul

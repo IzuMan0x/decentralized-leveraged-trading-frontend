@@ -1,19 +1,12 @@
 import React, { useState } from "react";
 import orderBookAbi from "../../assets/OrderBook.json";
 import pythNetworkAbi from "../../assets/pythnetwork-abi.json";
-import { usePrepareContractWrite, useContractWrite } from "wagmi";
-import { parseEther, formatUnits, parseUnits } from "viem";
-
-import { readContract, prepareWriteContract, writeContract } from "@wagmi/core";
-import { EvmPriceServiceConnection } from "@pythnetwork/pyth-evm-js";
+import { parseEther, parseUnits } from "viem";
+import { prepareWriteContract, writeContract } from "@wagmi/core";
 
 const orderBook = {
   address: process.env.NEXT_PUBLIC_ORDER_BOOK_CONTRACT_ADDRESS,
   abi: orderBookAbi.abi,
-};
-const pythNetwork = {
-  abi: pythNetworkAbi,
-  address: process.env.NEXT_PUBLIC_PYTH_CONTRACT_ADDRESS,
 };
 
 function LimitOrderButton(props) {
@@ -35,7 +28,7 @@ function LimitOrderButton(props) {
         parseEther?.(props.collateral),
         parseUnits?.(props.leverage, 6),
         props.orderType,
-        props.targetPrice,
+        parseUnits?.(props.targetPrice, 8),
       ],
     }).catch((err) => setOrderLoading(false));
 

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React from "react";
 
 import {
   EthereumClient,
@@ -16,9 +16,9 @@ import {
   zkSync,
   zkSyncTestnet,
 } from "wagmi/chains";
-import WalletConnectModal from "./WalletConnectModal";
 
 /* Defining the localchain becasue the provided localchain from WAGMI has a different Id of 1337 */
+
 const localhost = {
   id: 31337,
   name: "developmentNetwork",
@@ -49,8 +49,9 @@ const chains = [
 ];
 
 const projectId = "b95db88f2294ab412d2b370774f19d3e";
-
+//May need to add alchemy as a RPC URL
 const { publicClient } = configureChains(chains, [w3mProvider({ projectId })]);
+
 const wagmiConfig = createConfig({
   autoConnect: true,
   connectors: w3mConnectors({ projectId, chains }),

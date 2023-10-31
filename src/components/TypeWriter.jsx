@@ -1,3 +1,4 @@
+"use client";
 import React from "react";
 import { useState, useEffect } from "react";
 
@@ -39,8 +40,8 @@ function TypeWriter() {
           return prev.substring(0, j + 1);
         });
 
-        console.log(j);
-        console.log("the current word length is;", currentWordVar.length);
+        /* console.log(j);
+        console.log("the current word length is;", currentWordVar.length); */
         j++;
         if (j === words[i].length) {
           //isDeleting = true;

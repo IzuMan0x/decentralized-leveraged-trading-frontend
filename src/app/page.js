@@ -1,8 +1,8 @@
-"use client";
-import React, { useEffect, useState } from "react";
+import React from "react";
 import StarsCanvas from "@/components/canvas/Stars";
 import TypeWriter from "../components/TypeWriter";
 import Footer from "@/components/Footer";
+import Link from "next/link";
 
 function HomePage() {
   return (
@@ -20,12 +20,12 @@ function HomePage() {
               </div>
             </div>
             <div className="flex justify-center">
-              <a
+              <Link
                 href="/trading"
                 className="hover:cursor-pointer z-10 m-10 text-white flex justify-center bg-gradient-to-r from-blue-500 via-blue-600 to-blue-700 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800 font-medium rounded-full text-6xl p-10 text-center mr-6 mb-6"
               >
                 Enter App
-              </a>
+              </Link>
             </div>
           </div>
         </div>

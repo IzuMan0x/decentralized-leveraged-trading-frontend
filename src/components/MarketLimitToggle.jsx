@@ -5,7 +5,7 @@ function MarketLimitToggle(props) {
     <div className=" rounded-lg shadow-sm grid grid-cols-2">
       <button
         type="button"
-        value={false}
+        value="false"
         onClick={props.toggle}
         className={`${
           props.limitOrder == "false" ? "bg-blue-700" : "bg-gray-600"
@@ -15,7 +15,7 @@ function MarketLimitToggle(props) {
       </button>
       <button
         type="button"
-        value={true}
+        value="true"
         className={`${
           props.limitOrder == "true" ? "bg-blue-700" : "bg-gray-600"
         } p-2 h-10 rounded-lg flex justify-center`}

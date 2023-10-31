@@ -1,21 +1,14 @@
 "use client";
 import React, { useState } from "react";
-import { EvmPriceServiceConnection } from "@pythnetwork/pyth-evm-js";
-import {
-  useAccount,
-  usePrepareContractWrite,
-  useContractWrite,
-  useContractRead,
-} from "wagmi";
-import { readContract } from "@wagmi/core";
-import { parseEther, formatUnits, parseUnits } from "viem";
+
+import { useAccount, useContractRead } from "wagmi";
+import { formatUnits } from "viem";
 /* Contract abi location  **Note the ABI needs to be an array to be used with viem or wagmi*/
 //production
 import orderBookAbi from "../assets/OrderBook.json";
-import pythNetworkAbi from "../assets/pythnetwork-abi.json";
+
 import erc20Abi from "../assets/ERC20-abi.json";
 
-import { PriceTicker } from "./PythPriceText";
 import MarketLimitToggle from "./MarketLimitToggle";
 import LimitStrikePrice from "./LimitStrikePrice";
 import LongShortToggle from "./LongShortToggle";
@@ -34,21 +27,10 @@ const orderBook = {
   address: process.env.NEXT_PUBLIC_ORDER_BOOK_CONTRACT_ADDRESS,
   abi: orderBookAbi,
 };
-//orderBookContractAddress
-const pythNetwork = {
-  abi: pythNetworkAbi,
-  address: process.env.NEXT_PUBLIC_PYTH_CONTRACT_ADDRESS,
-};
 
 const collateralTokenAddress = process.env.NEXT_PUBLIC_COLLATERAL_TOKEN_ADDRESS;
 
 const tradingViewArray = ["ETHUSD", "BTCUSD", "XRPUSD", "MATICUSD", "BNBUSD"];
-const openFeePercentage = 0.00075;
-
-const currencyFormat = new Intl.NumberFormat("en-US", {
-  style: "currency",
-  currency: "USD",
-});
 
 //React component
 function InputTradeValues(props) {
@@ -69,7 +51,7 @@ function InputTradeValues(props) {
   const [tokenAllowance, setTokenAllowance] = useState();
   const [collateralInput, setCollateralInput] = useState(0);
   const [leverageAmount, setLeverageAmount] = useState();
-  const [assetListHidden, setAssetListHidden] = useState(true);
+
   const [selectedAsset, setSelectedAsset] = useState();
   const [selectedAssetSymbol, setSelectedAssetSymbol] = useState("Nothing");
   const mounted = useIsMounted();
@@ -112,20 +94,19 @@ function InputTradeValues(props) {
   const toggleAssetPairListHandler = () => {
     setAssetListHidden(() => !assetListHidden);
   };
-  const closeAssetDropDownListHandler = () => {
-    setAssetListHidden(true);
-  };
 
   const selectedAssetHandler = (event) => {
     setSelectedAsset(event.target.value);
     setSelectedAssetSymbol(tradingViewArray[event.target.value]);
     props.assetChange(tradingViewArray[event.target.value], event.target.value);
-    setAssetListHidden(true);
+    //setAssetListHidden(true);
     console.log("Selected Asset is: ", event.target.value);
   };
   const limitPriceChangeHandler = (newPrice) => {
     setLimitPrice(newPrice);
   };
+
+  //console.log("from the inputTrader component", props.hideAssetList);
 
   return (
     <div>
@@ -178,8 +159,10 @@ function InputTradeValues(props) {
                   selectedAsset={selectedAsset}
                   selectedAssetSymbol={selectedAssetSymbol}
                   selectedAssetHandler={selectedAssetHandler}
-                  dropDownListHidden={assetListHidden}
-                  hideList={closeAssetDropDownListHandler}
+                  //dropDownListHidden={assetListHidden}
+                  //hideList={closeAssetDropDownListHandler}
+                  hideAssetList={props.hideAssetList}
+                  isAssetListHidden={props.isAssetListHidden}
                 />
               </div>
             </div>
@@ -254,10 +237,12 @@ function InputTradeValues(props) {
       )}
 
       <TradeDetails
+        limitOrder={limitOrder}
         orderType={orderType}
         selectedAsset={selectedAsset}
         collateral={collateralInput}
         leverage={leverageAmount}
+        limitPrice={limitPrice}
       />
     </div>
   );

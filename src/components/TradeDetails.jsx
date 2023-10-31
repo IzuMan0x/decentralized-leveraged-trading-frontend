@@ -36,35 +36,45 @@ function TradeDetails(props) {
           </li>
           <li>
             <span>
-              Estimated Execution Price:
-              <PriceTicker
-                estimateTradeOpenPrice={props.selectedAsset}
-                orderType={props.orderType}
-              ></PriceTicker>
+              Estimated Execution Price:{" "}
+              {props.limitOrder === "true" ? (
+                currencyFormat.format(props.limitPrice)
+              ) : (
+                <PriceTicker
+                  estimateTradeOpenPrice={props.selectedAsset}
+                  orderType={props.orderType}
+                ></PriceTicker>
+              )}
             </span>
           </li>
           <li>
             Position Size is:{" "}
             {`${currencyFormat?.format(
               props.collateral * props.leverage -
-                props.collateral * props.leverage * openFeePercentage
+                props.collateral * props.leverage * openFeePercentage -
+                (props.limitOrder === "true" ? 2 : 0)
             )}`}
           </li>
           <li>
             {`Opening Fee is: 
       ${currencyFormat?.format(
-        props.collateral * props.leverage * openFeePercentage
+        props.collateral * props.leverage * openFeePercentage +
+          (props.limitOrder === "true" ? 2 : 0)
       )}`}
           </li>
           <li>
             Est. Liquidation Price is:{" "}
-            <span>
-              <LiquidationPrice
-                pairIndex={props.selectedAsset}
-                leverage={props.leverage}
-                orderType={props.orderType}
-              ></LiquidationPrice>
-            </span>
+            {props.limitOrder === "true" ? (
+              <span> N/A</span>
+            ) : (
+              <span>
+                <LiquidationPrice
+                  pairIndex={props.selectedAsset}
+                  leverage={props.leverage}
+                  orderType={props.orderType}
+                ></LiquidationPrice>
+              </span>
+            )}
           </li>
           <li>
             {" "}

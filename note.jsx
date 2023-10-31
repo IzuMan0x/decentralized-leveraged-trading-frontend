@@ -136,3 +136,49 @@ const tradeCloseHandler = () => {
   console.log("Order close function 1245", orderClose);
   orderClose?.();
 };
+
+//Maybe for later
+const alchemyApiKey = process.env.NEXT_PUBLIC_ALCHEMY_API_KEY;
+
+/* Defining the localchain becasue the provided localchain from WAGMI has a different Id of 1337 */
+const localhost = {
+  id: 31337,
+  name: "developmentNetwork",
+  network: "localhost",
+  nativeCurrency: {
+    decimals: 18,
+    name: "Ether",
+    symbol: "ETH",
+  },
+  rpcUrls: {
+    default: {
+      http: ["http://127.0.0.1:8545"],
+    },
+    public: {
+      http: ["http://127.0.0.1:8545"],
+    },
+  },
+};
+
+/* const chains = [
+  arbitrum,
+  mainnet,
+  polygon,
+  sepolia,
+  zkSync,
+  zkSyncTestnet,
+  localhost,
+]; */
+const chains = [sepolia, localhost];
+
+const projectId = "b95db88f2294ab412d2b370774f19d3e";
+
+const { publicClient } = configureChains(chains, [
+  alchemyProvider({ apiKey: alchemyApiKey }),
+  w3mProvider({ projectId }),
+]);
+const wagmiConfig = createConfig({
+  autoConnect: true,
+  connectors: w3mConnectors({ projectId, chains }),
+  publicClient,
+});
