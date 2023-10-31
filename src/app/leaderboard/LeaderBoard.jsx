@@ -79,6 +79,7 @@ function LeaderBoard() {
               console.log("made it here", key.totalTradeSize);
               return (
                 <LeaderBoardTable
+                  key={key}
                   address={key}
                   totalTrades={leaderboardData[key].totalTradeCount}
                   totalTradesSize={leaderboardData[key].collateralSupplied}
