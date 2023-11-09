@@ -2,8 +2,8 @@
 
 import React, { useState } from "react";
 import NotificationBar from "@/components/NotificationBar";
-import TradingViewWidget from "../../components/TradingViewWidget";
-import NavBar from "../../components/NavBar";
+import TradingViewWidget from "@/components/TradingViewWidget";
+import NavBar from "@/components/NavBar";
 import InfoBar from "@/components/InfoBar";
 import InputTradeValues from "@/components/InputTradeValues";
 import OpenTrades from "@/components/OpenTrades";
