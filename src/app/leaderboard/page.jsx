@@ -93,6 +93,7 @@ async function Page() {
         <div>
           <NavBar />
         </div>
+        <div></div>
         <LeaderBoard standings={standings} />
       </div>
       <Footer></Footer>

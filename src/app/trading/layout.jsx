@@ -1,7 +1,12 @@
 "use client";
 
 import { AssetListProvider } from "@/components/DropDownListContext";
+import { HamburgerMenuProvider } from "@/components/HamburgerMenuContext";
 
 export default function layout({ children }) {
-  return <AssetListProvider>{children}</AssetListProvider>;
+  return (
+    <HamburgerMenuProvider>
+      <AssetListProvider>{children}</AssetListProvider>
+    </HamburgerMenuProvider>
+  );
 }

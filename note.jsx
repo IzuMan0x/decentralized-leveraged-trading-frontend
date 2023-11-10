@@ -182,3 +182,26 @@ const wagmiConfig = createConfig({
   connectors: w3mConnectors({ projectId, chains }),
   publicClient,
 });
+
+//might need
+
+<div className="grid h-full w-full py-5 md:grid-flow-row">
+  <div className="border-solid border-4 border-gray-700 rounded-xl shadow-2xl shadow-slate-700 col-span-2 mx-4 flex">
+    <div className="grid grid-rows-6">
+      <div className="row-span-1 md:hidden"></div>
+
+      <div className="row-span-5 h-fit p-4 max-w-screen">
+        <TradingViewWidget assetSelect={tradingViewAsset} />
+      </div>
+    </div>
+  </div>
+  <div className="lg:col-span-1 md:col-span-3">
+    <div>
+      <div className="border-solid border-4 border-gray-700 rounded-xl shadow-2xl shadow-slate-700 mx-4 my-10 flex ">
+        <div className="h-full w-full flex px-6 justify-center">
+          <InputTradeValues assetChange={tradingViewAssetChangeHandler} />
+        </div>
+      </div>
+    </div>
+  </div>
+</div>;

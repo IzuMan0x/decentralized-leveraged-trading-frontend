@@ -7,6 +7,15 @@ import { parseEther, formatUnits, parseUnits } from "viem";
 import { readContract, prepareWriteContract, writeContract } from "@wagmi/core";
 import { EvmPriceServiceConnection } from "@pythnetwork/pyth-evm-js";
 
+const priceIds = [
+  // You can find the ids of prices at https://pyth.network/developers/price-feed-ids#pyth-evm-testnet
+  "0xca80ba6dc32e08d06f1aa886011eed1d77c77be9eb761cc10d72b7d0a2fd57a6", // ETH/USD price id on testnet
+  "0xf9c0172ba10dfa4d19088d94f5bf61d3b54d5bd7483a322a982e1373ee8ea31b", // BTC/USD price id on testnet
+  "0xbfaf7739cb6fe3e1c57a0ac08e1d931e9e6062d476fa57804e165ab572b5b621", // XRP/USD price id on testnet
+  "0xd2c2c1f2bba8e0964f9589e060c2ee97f5e19057267ac3284caef3bd50bd2cb5", // MATIC/USD price id on testnet
+  "0xecf553770d9b10965f8fb64771e93f5690a182edc32be4a3236e0caaa6e0581a", //BNB/USD price id on testnet
+];
+
 const orderBook = {
   address: process.env.NEXT_PUBLIC_ORDER_BOOK_CONTRACT_ADDRESS,
   abi: orderBookAbi.abi,
@@ -20,6 +29,15 @@ function OpenTradeButton(props) {
   const [orderLoading, setOrderLoading] = useState(false);
 
   const openTradeHandler = async () => {
+    if (
+      props.pairIndex == -1 ||
+      props.collateral == 0 ||
+      props.leverage == 0 ||
+      props.orderType > 1
+    ) {
+      return alert("Error! executing trade please check trade values!! ");
+    }
+
     setOrderLoading(true);
     setTimeout(() => {
       setOrderLoading(false);
@@ -29,7 +47,7 @@ function OpenTradeButton(props) {
       "https://xc-testnet.pyth.network"
     );
     const priceFeedUpdateData = await pythPriceService.getPriceFeedsUpdateData([
-      "0xca80ba6dc32e08d06f1aa886011eed1d77c77be9eb761cc10d72b7d0a2fd57a6",
+      priceIds[props.pairIndex],
     ]);
     const pythUpdateFee = await readContract({
       address: pythNetwork.address,

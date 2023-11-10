@@ -11,7 +11,7 @@ function LeaderBoardTable(props) {
           {props.address}
         </th>
         <td className="px-6 py-4">{props.totalTrades}</td>
-        <td className="px-6 py-4">{props.totalTradesSize}</td>
+
         <td className="px-6 py-4">{props.winnings}</td>
       </tr>
     </tbody>

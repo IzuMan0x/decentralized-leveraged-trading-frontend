@@ -24,15 +24,15 @@ function TotalShorts(props) {
     args: [props.pairIndex],
     watch: true,
   });
+
+  console.log("total shorts are: ", isError, isLoading);
   return (
     <>
       <div>
-        {`Total Longs: ${
-          !isError && !isLoading ? (
-            currencyFormat?.format(formatUnits(totalShorts, 18))
-          ) : (
-            <div>NaN</div>
-          )
+        {`Total Shorts: ${
+          !isError && !isLoading
+            ? currencyFormat?.format(formatUnits(totalShorts, 18))
+            : "Loading..."
         }`}
       </div>
     </>

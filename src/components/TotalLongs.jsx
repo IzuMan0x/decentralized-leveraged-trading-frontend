@@ -27,11 +27,9 @@ function TotalLongs(props) {
     <>
       <div>
         {`Total Longs: ${
-          !isError && !isLoading ? (
-            currencyFormat?.format(formatUnits(totalLongs, 18))
-          ) : (
-            <div>NaN</div>
-          )
+          !isError && !isLoading
+            ? currencyFormat?.format(formatUnits(totalLongs, 18))
+            : "Loading..."
         }`}
       </div>
     </>

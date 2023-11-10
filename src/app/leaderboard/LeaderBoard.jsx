@@ -12,8 +12,8 @@ function LeaderBoard({ standings }) {
         </h1>
       </div>
 
-      <div className="relative overflow-x-auto m-10 rounded-lg">
-        <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400 ">
+      <div className="relative m-10 overflow-none rounded-lg">
+        <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
           <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
             <tr>
               <th scope="col" className="px-6 py-3">
@@ -22,11 +22,9 @@ function LeaderBoard({ standings }) {
               <th scope="col" className="px-6 py-3">
                 Number of Trades
               </th>
+
               <th scope="col" className="px-6 py-3">
-                Total Trade Value
-              </th>
-              <th scope="col" className="px-6 py-3">
-                Winnings
+                Net Winnings
               </th>
             </tr>
           </thead>
@@ -42,7 +40,6 @@ function LeaderBoard({ standings }) {
                 key={userAddress}
                 address={userAddress}
                 totalTrades={val[userAddress].totalTradeCount}
-                totalTradesSize={"placeholder"}
                 winnings={val[userAddress].payouts}
               ></LeaderBoardTable>
             );

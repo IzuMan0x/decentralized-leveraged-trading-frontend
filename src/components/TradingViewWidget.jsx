@@ -47,7 +47,7 @@ export default function TradingViewWidget(props) {
 
   return (
     <>
-      <div id="tradingview" className="h-full w-full" />
+      <div id="tradingview" className="h-full w-full flex" />
     </>
   );
 }

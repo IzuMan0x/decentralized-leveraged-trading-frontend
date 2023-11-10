@@ -56,18 +56,8 @@ function InputTradeValues(props) {
   const [selectedAssetSymbol, setSelectedAssetSymbol] = useState("Nothing");
   const mounted = useIsMounted();
 
-  ////////////////////////////////////////////////////////////////////
-  //Functions for Testing the Contract Intereacting with Mocks etc.///
-  ////////////////////////////////////////////////////////////////////
-
-  //Here we are retrieving the token collateral address
-  // for production this may just be an .env variable
-
-  const {
-    data: contractTokenAllowance,
-    error: contractTokenAllowanceError,
-    isLoading: contractTokenAllowanceIsLoading,
-  } = useContractRead({
+  //Getting the token allowance for the connected wallet to dynamically render a button
+  useContractRead({
     address: collateralTokenAddress,
     abi: erc20Abi.abi,
     args: [address, orderBook.address],
@@ -80,9 +70,9 @@ function InputTradeValues(props) {
 
   const toggleOrderTypeHandler = (event) => {
     setOrderType(event.target.value);
-
     //console.log("ordertype is: ", orderType);
   };
+
   const toggleLimitOrder = (event) => {
     setLimitOrder(event.target.value);
   };
@@ -100,7 +90,7 @@ function InputTradeValues(props) {
     setSelectedAssetSymbol(tradingViewArray[event.target.value]);
     props.assetChange(tradingViewArray[event.target.value], event.target.value);
     //setAssetListHidden(true);
-    console.log("Selected Asset is: ", event.target.value);
+    //console.log("Selected Asset is: ", event.target.value);
   };
   const limitPriceChangeHandler = (newPrice) => {
     setLimitPrice(newPrice);
@@ -110,25 +100,15 @@ function InputTradeValues(props) {
 
   return (
     <div>
-      {/* {marketOrderSuccess ? setModal(true) : ""} */}
-      {false && (
-        <TradeModal
-          mainMessage={"Trade Successfully Opened!!!"}
-          buttonMessage={"Well done"}
-        />
-      )}
-      {tradeModalCheck &&
-        false(
-          <OpenTradeModal
-            mainMessage={`Trade Parameters are:`}
-            buttonMessage={"Confirm Trade"}
-            orderArgs={orderArgs}
-            closeModal={closeTradeModal}
-          ></OpenTradeModal>
-        )}
       {mounted && (
         <form>
           <div className="grid gap-2 mb-1 md:grid-cols-2">
+            <div className="col-span-2 my-2">
+              <LongShortToggle
+                toggle={toggleOrderTypeHandler}
+                orderType={orderType}
+              ></LongShortToggle>
+            </div>
             <div className="col-span-2 my-2">
               <MarketLimitToggle
                 toggle={toggleLimitOrder}
@@ -141,12 +121,6 @@ function InputTradeValues(props) {
                 limitOrder={limitOrder}
                 limitPriceChangeHandler={limitPriceChangeHandler}
               ></LimitStrikePrice>
-            </div>
-            <div className="col-span-2 my-2">
-              <LongShortToggle
-                toggle={toggleOrderTypeHandler}
-                orderType={orderType}
-              ></LongShortToggle>
             </div>
 
             <div>

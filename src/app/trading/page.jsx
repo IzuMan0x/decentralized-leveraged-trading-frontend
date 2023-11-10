@@ -9,10 +9,12 @@ import InputTradeValues from "@/components/InputTradeValues";
 import OpenTrades from "@/components/OpenTrades";
 import OpenLimitOrders from "@/components/OpenLimitOrders";
 import TradingPoints from "@/components/TradingPoints";
+//context
 import {
   useAssetList,
   useUpdateAssetList,
 } from "@/components/DropDownListContext";
+import { useHamburgerMenu } from "@/components/HamburgerMenuContext";
 
 import Footer from "@/components/Footer";
 
@@ -22,6 +24,7 @@ function TradingPage() {
 
   const dropdownListHidden = useAssetList();
   const toggleAssetListVisibility = useUpdateAssetList();
+  const menuHidden = useHamburgerMenu();
 
   const tradingViewAssetChangeHandler = (assetSymbol, assetIndex) => {
     setTradingViewAsset(assetSymbol);
@@ -32,8 +35,8 @@ function TradingPage() {
     console.log("hide asset handler ran");
     if (!dropdownListHidden) {
       toggleAssetListVisibility(true);
-    } else {
-      console.log("Cannot close what is not hidden... from the trading page");
+    } else if (!menuHidden?.state) {
+      menuHidden.hideMenu(true);
     }
   };
 
@@ -44,24 +47,14 @@ function TradingPage() {
     >
       <div className="w-full h-full">
         <NotificationBar></NotificationBar>
-        <div>
-          <NavBar />
-        </div>
-
-        <div className="grid h-full w-full py-10 lg:grid-cols-3 md:grid-flow-row">
-          <div className="border-solid border-4 border-gray-700 rounded-xl shadow-2xl shadow-slate-700 col-span-2 mx-4 flex">
-            <div className="grid grid-rows-6">
-              <div className="row-span-1">
-                <InfoBar
-                  assetSelectIndex={tradingAssetIndex}
-                  assetSelectSymbol={tradingViewAsset}
-                ></InfoBar>
-              </div>
-
-              <div className="row-span-5 p-2 flex">
-                <TradingViewWidget assetSelect={tradingViewAsset} />
-              </div>
-            </div>
+        <NavBar />
+        <InfoBar
+          assetSelectIndex={tradingAssetIndex}
+          assetSelectSymbol={tradingViewAsset}
+        ></InfoBar>
+        <div className="grid h-full w-full grid-flow-column">
+          <div className="h-[30rem] p-1 border-solid border-4 border-gray-700 rounded-xl shadow-2xl shadow-slate-700 col-span-3 mx-6 flex">
+            <TradingViewWidget assetSelect={tradingViewAsset} />
           </div>
           <div className="lg:col-span-1 md:col-span-3">
             <div>
