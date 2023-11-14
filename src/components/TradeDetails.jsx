@@ -19,7 +19,7 @@ const assetSymbolArray = [
 
 function TradeDetails(props) {
   return (
-    <div className="flex text-white mx-10 border-solid border-4 border-gray-700 shadow-md rounded-lg px-6 py-3 my-4">
+    <div className="flex text-white mx-5 border-solid border-4 border-gray-700 shadow-md rounded-lg px-6 py-3 my-4">
       <div>
         <h1 className="mb-2 text-lg font-semibold text-white">
           Position Details
@@ -41,6 +41,7 @@ function TradeDetails(props) {
                 currencyFormat.format(props.limitPrice)
               ) : (
                 <PriceTicker
+                  pairIndex={props.selectedAsset}
                   estimateTradeOpenPrice={props.selectedAsset}
                   orderType={props.orderType}
                 ></PriceTicker>

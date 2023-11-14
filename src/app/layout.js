@@ -3,6 +3,8 @@ import { Inter } from "next/font/google";
 import logo from "../assets/website-logo.png";
 import { WalletConfigWrapper } from "@/components/WalletConfigWrapper";
 
+import StatusFooter from "@/components/StatusFooter";
+
 const inter = Inter({ subsets: ["latin"] });
 
 //This was introducted in the App router
@@ -30,6 +32,7 @@ export default function RootLayout({ children }) {
 
       <body className={inter.className}>
         <WalletConfigWrapper>{children}</WalletConfigWrapper>
+        <StatusFooter></StatusFooter>
       </body>
     </html>
   );

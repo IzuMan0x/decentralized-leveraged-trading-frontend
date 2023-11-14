@@ -38,15 +38,7 @@ const localhost = {
   },
 };
 
-const chains = [
-  arbitrum,
-  mainnet,
-  polygon,
-  sepolia,
-  zkSync,
-  zkSyncTestnet,
-  localhost,
-];
+const chains = [sepolia, localhost];
 
 const projectId = "b95db88f2294ab412d2b370774f19d3e";
 //May need to add alchemy as a RPC URL

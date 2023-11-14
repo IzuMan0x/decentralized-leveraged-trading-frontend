@@ -56,20 +56,9 @@ function TradingPage() {
           <div className="h-[30rem] p-1 border-solid border-4 border-gray-700 rounded-xl shadow-2xl shadow-slate-700 col-span-3 mx-6 flex">
             <TradingViewWidget assetSelect={tradingViewAsset} />
           </div>
-          <div className="lg:col-span-1 md:col-span-3">
-            <div>
-              <div className="border-solid border-4 border-gray-700 rounded-xl shadow-2xl shadow-slate-700 mx-4 my-10 flex ">
-                <div className="h-full w-full flex px-6 justify-center">
-                  <InputTradeValues
-                    assetChange={tradingViewAssetChangeHandler}
-                  />
-                </div>
-              </div>
-            </div>
-          </div>
         </div>
-
-        <div className="flex flex-center items-center justify-center border-4 border-gray-700 rounded-xl border-solid shadow-slate-700 mx-4 p-10 h-auto w-auto">
+        <InputTradeValues assetChange={tradingViewAssetChangeHandler} />
+        <div className="my-6 flex flex-center items-center justify-center border-4 border-gray-700 rounded-xl border-solid shadow-slate-700 mx-4 p-10 h-auto w-auto">
           <OpenTrades />
         </div>
         <div className="flex flex-center items-center justify-center border-4 border-gray-700 rounded-xl border-solid shadow-slate-700 mx-4 p-10 h-auto w-auto">

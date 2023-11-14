@@ -1,5 +1,6 @@
 "use client";
 import React, { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 
 import { useAccount, useContractRead } from "wagmi";
 import { formatUnits } from "viem";
@@ -12,8 +13,6 @@ import erc20Abi from "../assets/ERC20-abi.json";
 import MarketLimitToggle from "./MarketLimitToggle";
 import LimitStrikePrice from "./LimitStrikePrice";
 import LongShortToggle from "./LongShortToggle";
-import TradeModal from "./TradeModal";
-import OpenTradeModal from "./OpenTradeModal";
 import DropDownSelector from "./DropDownSelector";
 import ApproveTokenButton from "./buttons/ApproveTokenButton";
 import { useIsMounted } from "@/hooks/useIsMounted";
@@ -21,6 +20,15 @@ import { Web3Button } from "@web3modal/react";
 import OpenTradeButton from "./buttons/OpenTradeButton";
 import LimitOrderButton from "./buttons/LimitOrderButton";
 import TradeDetails from "./TradeDetails";
+import TradingNumberInput from "@/components/TradingNumberInput";
+import { useWindowSize } from "@/hooks/useWindowSize";
+import { useNetwork } from "wagmi";
+
+//Material ui
+
+import Box from "@mui/material/Box";
+import TextField from "@mui/material/TextField";
+import Slider from "@mui/material/Slider";
 
 //note we need to prefix the env variables with NEXT_PUBLIC to use them on the browser side
 const orderBook = {
@@ -34,6 +42,7 @@ const tradingViewArray = ["ETHUSD", "BTCUSD", "XRPUSD", "MATICUSD", "BNBUSD"];
 
 //React component
 function InputTradeValues(props) {
+  const windowSize = useWindowSize();
   const [orderType, setOrderType] = useState(0);
   const [orderArgs, setOrderArgs] = useState({
     pairIndex: -1,
@@ -45,7 +54,7 @@ function InputTradeValues(props) {
   const [prepareContract, setPrepareContract] = useState(false);
   const [tradeModalCheck, setTradeModalCheck] = useState(false);
   const [limitOrder, setLimitOrder] = useState("false");
-  const [limitPrice, setLimitPrice] = useState(0);
+  const [limitPrice, setLimitPrice] = useState("");
 
   const { address, isConnected } = useAccount();
   const [tokenAllowance, setTokenAllowance] = useState();
@@ -53,8 +62,9 @@ function InputTradeValues(props) {
   const [leverageAmount, setLeverageAmount] = useState();
 
   const [selectedAsset, setSelectedAsset] = useState();
-  const [selectedAssetSymbol, setSelectedAssetSymbol] = useState("Nothing");
+  const [selectedAssetSymbol, setSelectedAssetSymbol] = useState("");
   const mounted = useIsMounted();
+  const { chain } = useNetwork();
 
   //Getting the token allowance for the connected wallet to dynamically render a button
   useContractRead({
@@ -95,130 +105,155 @@ function InputTradeValues(props) {
   const limitPriceChangeHandler = (newPrice) => {
     setLimitPrice(newPrice);
   };
+  const handleLeverageSlider = (event, newValue) => {
+    setLeverageAmount(newValue);
+  };
 
   //console.log("from the inputTrader component", props.hideAssetList);
 
   return (
-    <div>
-      {mounted && (
-        <form>
-          <div className="grid gap-2 mb-1 md:grid-cols-2">
-            <div className="col-span-2 my-2">
-              <LongShortToggle
-                toggle={toggleOrderTypeHandler}
-                orderType={orderType}
-              ></LongShortToggle>
-            </div>
-            <div className="col-span-2 my-2">
-              <MarketLimitToggle
-                toggle={toggleLimitOrder}
-                limitOrder={limitOrder}
-              ></MarketLimitToggle>
-            </div>
-            <div className="col-span-2 my-2">
-              <LimitStrikePrice
-                limitPrice={limitPrice}
-                limitOrder={limitOrder}
-                limitPriceChangeHandler={limitPriceChangeHandler}
-              ></LimitStrikePrice>
+    <>
+      <motion.div
+        layout
+        className="grid-cols-2 border-solid border-4 border-gray-700 rounded-xl shadow-2xl shadow-slate-700 mx-5 my-10 flex p-3 w-auto
+        "
+      >
+        {mounted && (
+          <form>
+            <div className="col-span-2">
+              <label className="text-sm font-medium text-white col-span-1">
+                Select Trading Pair
+              </label>
+
+              <DropDownSelector
+                toggleAssetPairList={toggleAssetPairListHandler}
+                selectedAsset={selectedAsset}
+                selectedAssetSymbol={selectedAssetSymbol}
+                selectedAssetHandler={selectedAssetHandler}
+                hideAssetList={props.hideAssetList}
+                isAssetListHidden={props.isAssetListHidden}
+              />
             </div>
 
-            <div>
-              <label className="text-sm font-medium text-white">
-                Selected Trading Pair
-              </label>
-              <div className="col-span-2 flex w-full">
-                <DropDownSelector
-                  toggleAssetPairList={toggleAssetPairListHandler}
-                  selectedAsset={selectedAsset}
-                  selectedAssetSymbol={selectedAssetSymbol}
-                  selectedAssetHandler={selectedAssetHandler}
-                  //dropDownListHidden={assetListHidden}
-                  //hideList={closeAssetDropDownListHandler}
-                  hideAssetList={props.hideAssetList}
-                  isAssetListHidden={props.isAssetListHidden}
-                />
+            <div className="grid gap-2 mb-1 md:grid-cols-2">
+              <div className="col-span-2 my-2">
+                <LongShortToggle
+                  toggle={toggleOrderTypeHandler}
+                  orderType={orderType}
+                ></LongShortToggle>
+              </div>
+              <div className="col-span-2 my-">
+                <MarketLimitToggle
+                  toggle={toggleLimitOrder}
+                  limitOrder={limitOrder}
+                ></MarketLimitToggle>
+              </div>
+              <div className="flex">
+                <TradingNumberInput
+                  changeHandler={setCollateralInput}
+                  value={collateralInput}
+                  name="collateral"
+                  id="collateral-amount"
+                  text="Enter Collateral"
+                ></TradingNumberInput>
+              </div>
+
+              <AnimatePresence>
+                {limitOrder == "true" && (
+                  <motion.div
+                    key="limit-price"
+                    initial={{ opacity: 0, y: +30 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: +30 }}
+                    transition={{ duration: 0.5 }}
+                    className="col-span-2 my-2 h-24"
+                  >
+                    <TradingNumberInput
+                      id="limit-price"
+                      value={limitPrice}
+                      name="limit-price"
+                      text="Enter Limit Price"
+                      changeHandler={limitPriceChangeHandler}
+                    ></TradingNumberInput>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+              <div className="col-span-2">
+                <div>
+                  <label
+                    htmlFor="leverage_amount"
+                    className="block mb-2 text-sm font-medium text-white"
+                  >
+                    Leverage Slider
+                  </label>
+                  <Slider
+                    aria-label="Small steps"
+                    defaultValue={1}
+                    onChange={handleLeverageSlider}
+                    step={1}
+                    min={1}
+                    max={150}
+                    valueLabelDisplay="auto"
+                  />
+                </div>
+                <TradingNumberInput
+                  changeHandler={setLeverageAmount}
+                  value={leverageAmount}
+                  name="leverage"
+                  id="leverage-amount"
+                  text="Enter Leverage"
+                ></TradingNumberInput>
               </div>
             </div>
-
-            <div>
-              <label
-                for="collateral_amount"
-                className="block mb-2 text-sm font-medium text-white"
-              >
-                Collateral Amount
-              </label>
-              <input
-                type="number"
-                min={10}
-                id="collateral_amount"
-                name="collateral"
-                className="flex -webkit-appearance:none -moz-appearance:textfield my-4 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                placeholder="150"
-                required
-                value={collateralInput}
-                onChange={(event) => setCollateralInput(event.target.value)}
+            {isConnected == false ? (
+              <div className="bg-gray-700 p-2 rounded-lg hover:bg-red-900 flex justify-center">
+                <Web3Button />
+              </div>
+            ) : tokenAllowance == 0 ||
+              Number(tokenAllowance) < collateralInput ? (
+              <ApproveTokenButton />
+            ) : limitOrder == "false" ? (
+              <OpenTradeButton
+                chainId={chain.id}
+                leverage={leverageAmount}
+                collateral={collateralInput}
+                orderType={orderType}
+                pairIndex={selectedAsset}
               />
-            </div>
-            <div>
-              <label
-                htmlFor="leverage_amount"
-                className="block mb-2 text-sm font-medium text-white"
-              >
-                Leverage Amount
-              </label>
-              <input
-                type="number"
-                id="leverage_amount"
-                min={1}
-                max={150}
-                value={leverageAmount}
-                onChange={(event) => {
-                  setLeverageAmount(event.target.value);
-                }}
-                pattern="\d{3}"
-                name="leverage"
-                className="bg-gray-50 border my-2 border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                placeholder="1 to 150"
-                required
-              />
-            </div>
-          </div>
-          {isConnected == false ? (
-            <div className="bg-red-700 text-center items-center p-2 rounded-lg hover:bg-red-900">
-              <Web3Button />
-            </div>
-          ) : tokenAllowance == 0 ||
-            Number(tokenAllowance) < collateralInput ? (
-            <ApproveTokenButton />
-          ) : limitOrder == "false" ? (
-            <OpenTradeButton
-              leverage={leverageAmount}
-              collateral={collateralInput}
-              orderType={orderType}
-              pairIndex={selectedAsset}
-            />
-          ) : (
-            <LimitOrderButton
-              leverage={leverageAmount}
-              collateral={collateralInput}
-              orderType={orderType}
-              pairIndex={selectedAsset}
-              targetPrice={limitPrice}
-            ></LimitOrderButton>
-          )}
-        </form>
+            ) : (
+              <LimitOrderButton
+                chainId={chain.id}
+                leverage={leverageAmount}
+                collateral={collateralInput}
+                orderType={orderType}
+                pairIndex={selectedAsset}
+                targetPrice={limitPrice}
+              ></LimitOrderButton>
+            )}
+          </form>
+        )}
+        {windowSize.width > 880 && (
+          <TradeDetails
+            limitOrder={limitOrder}
+            orderType={orderType}
+            selectedAsset={selectedAsset}
+            collateral={collateralInput}
+            leverage={leverageAmount}
+            limitPrice={limitPrice}
+          />
+        )}
+      </motion.div>
+      {windowSize.width <= 880 && (
+        <TradeDetails
+          limitOrder={limitOrder}
+          orderType={orderType}
+          selectedAsset={selectedAsset}
+          collateral={collateralInput}
+          leverage={leverageAmount}
+          limitPrice={limitPrice}
+        />
       )}
-
-      <TradeDetails
-        limitOrder={limitOrder}
-        orderType={orderType}
-        selectedAsset={selectedAsset}
-        collateral={collateralInput}
-        leverage={leverageAmount}
-        limitPrice={limitPrice}
-      />
-    </div>
+    </>
   );
 }
 

@@ -57,14 +57,6 @@ export function PriceTicker(props) {
     );
   }, []);
 
-  /* if (price === undefined) {
-    return <span style={{ color: "grey" }}>loading...</span>;
-  } else {
-    const now = props.currentTime.getTime() / 1000; */
-
-  /*  console.log("Pyth offchain data is : ", pythOffChainPrice);
-  console.log("ordertype is: ", props.orderType); */
-
   return (
     <>
       {props.estimateTradeOpenPrice ? (

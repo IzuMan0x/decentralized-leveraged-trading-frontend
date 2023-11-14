@@ -1,20 +1,15 @@
 import React, { useState } from "react";
 import orderBookAbi from "../../assets/OrderBook.json";
 import pythNetworkAbi from "../../assets/pythnetwork-abi.json";
-import { usePrepareContractWrite, useContractWrite } from "wagmi";
-import { parseEther, formatUnits, parseUnits } from "viem";
-
+import { parseEther, parseUnits } from "viem";
 import { readContract, prepareWriteContract, writeContract } from "@wagmi/core";
 import { EvmPriceServiceConnection } from "@pythnetwork/pyth-evm-js";
+import {
+  pythTestPriceFeedIdArray,
+  testNetPriceServiceUrl,
+} from "@/utils/utils.jsx";
 
-const priceIds = [
-  // You can find the ids of prices at https://pyth.network/developers/price-feed-ids#pyth-evm-testnet
-  "0xca80ba6dc32e08d06f1aa886011eed1d77c77be9eb761cc10d72b7d0a2fd57a6", // ETH/USD price id on testnet
-  "0xf9c0172ba10dfa4d19088d94f5bf61d3b54d5bd7483a322a982e1373ee8ea31b", // BTC/USD price id on testnet
-  "0xbfaf7739cb6fe3e1c57a0ac08e1d931e9e6062d476fa57804e165ab572b5b621", // XRP/USD price id on testnet
-  "0xd2c2c1f2bba8e0964f9589e060c2ee97f5e19057267ac3284caef3bd50bd2cb5", // MATIC/USD price id on testnet
-  "0xecf553770d9b10965f8fb64771e93f5690a182edc32be4a3236e0caaa6e0581a", //BNB/USD price id on testnet
-];
+/*  */
 
 const orderBook = {
   address: process.env.NEXT_PUBLIC_ORDER_BOOK_CONTRACT_ADDRESS,
@@ -24,16 +19,32 @@ const pythNetwork = {
   abi: pythNetworkAbi,
   address: process.env.NEXT_PUBLIC_PYTH_CONTRACT_ADDRESS,
 };
+const getPythConfig = (chainId, pairIndex) => {
+  //contract is live on the sepolia testnet
+  if (chainId == 11155111) {
+    return {
+      url: testNetPriceServiceUrl,
+      priceId: pythTestPriceFeedIdArray[pairIndex],
+    };
+  } else {
+    console.log("Mainnet has not been setup up yet");
+  }
+};
 
 function OpenTradeButton(props) {
   const [orderLoading, setOrderLoading] = useState(false);
+  //expect to get the chain id from the props
+  console.log("from the open trade button:", props.chainId);
+  const pythConfig = getPythConfig(props.chainId, props.pairIndex);
 
   const openTradeHandler = async () => {
     if (
       props.pairIndex == -1 ||
+      props.pairIndex == undefined ||
       props.collateral == 0 ||
       props.leverage == 0 ||
-      props.orderType > 1
+      props.orderType > 1 ||
+      props.collateral * props.leverage < 1500
     ) {
       return alert("Error! executing trade please check trade values!! ");
     }
@@ -43,11 +54,9 @@ function OpenTradeButton(props) {
       setOrderLoading(false);
       console.log("market Order timed Out after 10 seconds");
     }, 10000);
-    const pythPriceService = new EvmPriceServiceConnection(
-      "https://xc-testnet.pyth.network"
-    );
+    const pythPriceService = new EvmPriceServiceConnection(pythConfig.url);
     const priceFeedUpdateData = await pythPriceService.getPriceFeedsUpdateData([
-      priceIds[props.pairIndex],
+      pythConfig.priceId,
     ]);
     const pythUpdateFee = await readContract({
       address: pythNetwork.address,
@@ -121,7 +130,14 @@ function OpenTradeButton(props) {
 }
 
 export default OpenTradeButton;
-
+/* const priceIds = [
+  // You can find the ids of prices at https://pyth.network/developers/price-feed-ids#pyth-evm-testnet
+  "0xca80ba6dc32e08d06f1aa886011eed1d77c77be9eb761cc10d72b7d0a2fd57a6", // ETH/USD price id on testnet
+  "0xf9c0172ba10dfa4d19088d94f5bf61d3b54d5bd7483a322a982e1373ee8ea31b", // BTC/USD price id on testnet
+  "0xbfaf7739cb6fe3e1c57a0ac08e1d931e9e6062d476fa57804e165ab572b5b621", // XRP/USD price id on testnet
+  "0xd2c2c1f2bba8e0964f9589e060c2ee97f5e19057267ac3284caef3bd50bd2cb5", // MATIC/USD price id on testnet
+  "0xecf553770d9b10965f8fb64771e93f5690a182edc32be4a3236e0caaa6e0581a", //BNB/USD price id on testnet
+]; */
 /* const pythPriceService = new EvmPriceServiceConnection(
     "https://xc-testnet.pyth.network"
   );

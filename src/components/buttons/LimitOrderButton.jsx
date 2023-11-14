@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import orderBookAbi from "../../assets/OrderBook.json";
-import pythNetworkAbi from "../../assets/pythnetwork-abi.json";
 import { parseEther, parseUnits } from "viem";
 import { prepareWriteContract, writeContract } from "@wagmi/core";
 
@@ -14,6 +13,17 @@ function LimitOrderButton(props) {
 
   const openLimitOrder = async () => {
     setOrderLoading(true);
+    if (
+      props.pairIndex == -1 ||
+      props.pairIndex == undefined ||
+      props.collateral == 0 ||
+      props.leverage == 0 ||
+      props.orderType > 1 ||
+      props.collateral * props.leverage < 1500
+    ) {
+      setOrderLoading(false);
+      return alert("Error! executing trade please check trade values!! ");
+    }
     setTimeout(() => {
       setOrderLoading(false);
       console.log("market Order timed Out after 10 seconds");
