@@ -1,6 +1,6 @@
 import React from "react";
 import { useContractWrite, usePrepareContractWrite } from "wagmi";
-import erc20Abi from "../../assets/ERC20-abi.json";
+import erc20Abi from "@/assets/ERC20-abi.json";
 
 const collateralToken = {
   abi: erc20Abi.abi,

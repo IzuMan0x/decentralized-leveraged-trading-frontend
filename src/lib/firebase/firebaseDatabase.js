@@ -1,5 +1,14 @@
 import { initializeApp } from "firebase/app";
-import { getDatabase, ref, set } from "firebase/database"; // Import the Firebase Realtime Database
+import {
+  getDatabase,
+  ref,
+  set,
+  onValue,
+  limitToFirst,
+  limitToLast,
+  query,
+  orderByChild,
+} from "firebase/database"; // Import the Firebase Realtime Database
 
 const firebaseConfig = {
   apiKey: "AIzaSyBehsXijQJKUA2GXzaJv1HpDGXUMVhd2ow",
@@ -48,3 +57,58 @@ export const getAppInstance = () => {
 
 //module.exports = getDatabaseInstance;
 //exports.initFirebase = initFirebase;
+
+const onValueArray = [];
+const onValueDb = await getDatabaseInstance();
+const onValueDbRef = ref(onValueDb, "/standings");
+const onValueRef = query(onValueDbRef, orderByChild("payouts"), limitToLast(5));
+onValue(onValueRef, (snapshot) => {
+  snapshot.forEach((childSnapshot) => {
+    //console.log("the childrens snapshot is: ", childSnapshot.val());
+    const standingsObject = { [childSnapshot.key]: childSnapshot.val() };
+
+    onValueArray.push(standingsObject);
+  });
+
+  //console.log("the data from snapshot is: ", onValueArray);
+});
+
+const standingsPromise = new Promise((resolve, reject) => {
+  console.log("starting timer 3");
+  const retryNumber = 5;
+  let counter = 0;
+
+  const checkForData = () => {
+    setTimeout(() => {
+      if (counter >= retryNumber) {
+        reject("Data could not be fetched");
+      } else if (onValueArray.length === 0) {
+        counter++;
+        checkForData();
+      } else if (onValueArray.length >= 1) {
+        resolve(onValueArray);
+      }
+      console.log("promise3");
+    }, 1000);
+  };
+
+  if (onValueArray.length === 0) {
+    checkForData();
+  }
+});
+
+export const getStandings = async () => {
+  return await standingsPromise;
+};
+/*   if (getStandingsCounter >= 3) {
+    return "Data not Found in the database";
+  }
+  if (onValueArray.length === 0) {
+    const timer = setTimeout(() => {
+      getStandingsCounter++;
+      console.log("from the lib file the data is undefined");
+      getStandings();
+    }, 5000);
+  } else if (onValueArray.length != 0) {
+    return onValueArray;
+  } */

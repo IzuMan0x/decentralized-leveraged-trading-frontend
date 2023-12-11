@@ -1,10 +1,10 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import { useIsMounted } from "@/hooks/useIsMounted";
-import TotalLongs from "./TotalLongs";
-import TotalShorts from "./TotalShorts";
-import TotalLongsBorrowFee from "./TotalLongsBorrowFee";
-import TotalShortsBorrowFee from "./TotalShortsBorrowFee";
+import TotalLongs from "@/components/TotalLongs";
+import TotalShorts from "@/components/TotalShorts";
+import TotalLongsBorrowFee from "@/components/TotalLongsBorrowFee";
+import TotalShortsBorrowFee from "@/components/TotalShortsBorrowFee";
 
 function InfoBar(props) {
   const mounted = useIsMounted();

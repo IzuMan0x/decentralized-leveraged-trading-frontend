@@ -4,10 +4,10 @@ import {
   Price,
   EvmPriceServiceConnection,
 } from "@pythnetwork/pyth-evm-js";
-import { timeAgo } from "../utils/utils.jsx";
+
 import { formatUnits } from "viem";
-import orderBookAbi from "../assets/OrderBook.json";
-import { useAccount, useContractRead } from "wagmi";
+import orderBookAbi from "@/assets/OrderBook.json";
+import { useAccount } from "wagmi";
 
 const orderBook = {
   address: process.env.NEXT_PUBLIC_ORDER_BOOK_CONTRACT_ADDRESS,

@@ -1,7 +1,7 @@
 import React from "react";
 import Link from "next/link";
-import { motion, stagger, useAnimate } from "framer-motion";
-import { useHamburgerMenu } from "./HamburgerMenuContext";
+import { motion, useAnimate } from "framer-motion";
+import { useHamburgerMenu } from "@/components/HamburgerMenuContext";
 
 const linkListArray = [
   { title: "Trade", url: "/trading", target: "" },

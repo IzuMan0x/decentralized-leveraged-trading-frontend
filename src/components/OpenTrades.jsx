@@ -15,18 +15,14 @@ import {
 } from "wagmi";
 import { watchContractEvent } from "@wagmi/core";
 /* Contract abi location  **Note the ABI needs to be an array to be used with viem or wagmi*/
-import orderBookAbi from "../assets/OrderBook.json";
-import mockPythContractAbi from "../assets/mock-pyth-abi.json";
-import { abi as pythnetworkAbi } from "../assets/pythnetwork-abi.json";
+import orderBookAbi from "@/assets/OrderBook.json";
+import mockPythContractAbi from "@/assets/mock-pyth-abi.json";
+import { abi as pythnetworkAbi } from "@/assets/pythnetwork-abi.json";
 import { parseEther, formatUnits } from "viem";
-import { PriceTicker } from "./PythPriceText";
-import CloseTrade from "./CloseTrade";
-import PositionPnl from "./PositionPnl";
+import { PriceTicker } from "@/components/PythPriceText";
+import CloseTrade from "@/components/CloseTrade";
+import PositionPnl from "@/components/PositionPnl";
 import { useIsMounted } from "@/hooks/useIsMounted";
-import dotenv from "dotenv";
-
-const orderBookContractAddress =
-  process.env.NEXT_PUBLIC_ORDER_BOOK_CONTRACT_ADDRESS;
 
 const orderBook = {
   address: process.env.NEXT_PUBLIC_ORDER_BOOK_CONTRACT_ADDRESS,

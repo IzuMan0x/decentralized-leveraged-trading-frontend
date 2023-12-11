@@ -1,9 +1,8 @@
 import React, { useState } from "react";
-import orderBookAbi from "../../assets/OrderBook.json";
-import pythNetworkAbi from "../../assets/pythnetwork-abi.json";
+import orderBookAbi from "@/assets/OrderBook.json";
 
-import { parseEther, formatUnits, parseUnits } from "viem";
-import mockPythContractAbi from "../../assets/mock-pyth-abi.json";
+import { parseEther, parseUnits } from "viem";
+import mockPythContractAbi from "@/assets/mock-pyth-abi.json";
 
 import { readContract, prepareWriteContract, writeContract } from "@wagmi/core";
 
@@ -42,6 +41,8 @@ function OpenTradeButton(props) {
   const [orderLoading, setOrderLoading] = useState(false);
 
   const openTradeHandler = async () => {
+    const collateral = props.collateral.toString();
+    const leverage = props.leverage.toString();
     console.log("collateral", props.collateral);
     console.log("Leverage", props.leverage);
     console.log("orderType", props.orderType);
@@ -75,8 +76,8 @@ function OpenTradeButton(props) {
       functionName: "marketOrder",
       args: [
         props.pairIndex,
-        parseEther?.(props.collateral),
-        parseUnits?.(props.leverage, 6),
+        parseEther(collateral),
+        parseUnits(leverage, 6),
         props.orderType,
         [mockPythUpdateArray],
       ],

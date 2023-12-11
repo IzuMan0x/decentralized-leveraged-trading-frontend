@@ -1,6 +1,9 @@
 import React from "react";
 
-import { useAssetList, useUpdateAssetList } from "./DropDownListContext";
+import {
+  useAssetList,
+  useUpdateAssetList,
+} from "@/components/DropDownListContext";
 
 const pairIndexArray = [0, 1, 2, 3, 4];
 const pairSymbolsArray = [

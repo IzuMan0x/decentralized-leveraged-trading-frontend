@@ -1,12 +1,7 @@
-import erc20MockAbi from "../../assets/ERC20Mock-abi.json";
-import {
-  usePrepareContractWrite,
-  useContractWrite,
-  useContractRead,
-  useAccount,
-} from "wagmi";
-import { parseEther, formatUnits, parseUnits } from "viem";
-import orderBookAbi from "../../assets/OrderBook.json";
+import erc20MockAbi from "@/assets/ERC20Mock-abi.json";
+import { usePrepareContractWrite, useContractWrite, useAccount } from "wagmi";
+import { parseEther } from "viem";
+import orderBookAbi from "@/assets/OrderBook.json";
 import React from "react";
 
 const orderBook = {

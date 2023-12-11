@@ -1,8 +1,7 @@
-import React, { useEffect, useState } from "react";
-import { useContractReads, useContractRead } from "wagmi";
-import { readContract } from "@wagmi/core";
+import React from "react";
+import { useContractRead } from "wagmi";
 import { formatUnits } from "viem";
-import orderBookAbi from "../assets/OrderBook.json";
+import orderBookAbi from "@/assets/OrderBook.json";
 const orderBook = {
   address: process.env.NEXT_PUBLIC_ORDER_BOOK_CONTRACT_ADDRESS,
   abi: orderBookAbi.abi,
@@ -11,8 +10,6 @@ const orderBook = {
 const baseBorrowFee = 0.00006;
 
 function TotalShortsBorrowFee(props) {
-  //+ formatUnits?.(data[3]?.result, 7)
-
   const {
     data: borrowFeeRate,
     isError,

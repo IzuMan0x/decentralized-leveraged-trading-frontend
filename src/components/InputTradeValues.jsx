@@ -6,28 +6,25 @@ import { useAccount, useContractRead } from "wagmi";
 import { formatUnits } from "viem";
 /* Contract abi location  **Note the ABI needs to be an array to be used with viem or wagmi*/
 //production
-import orderBookAbi from "../assets/OrderBook.json";
+import orderBookAbi from "@/assets/OrderBook.json";
 
-import erc20Abi from "../assets/ERC20-abi.json";
+import erc20Abi from "@/assets/ERC20-abi.json";
 
-import MarketLimitToggle from "./MarketLimitToggle";
-import LimitStrikePrice from "./LimitStrikePrice";
-import LongShortToggle from "./LongShortToggle";
-import DropDownSelector from "./DropDownSelector";
-import ApproveTokenButton from "./buttons/ApproveTokenButton";
+import MarketLimitToggle from "@/components/MarketLimitToggle";
+
+import LongShortToggle from "@/components/LongShortToggle";
+import DropDownSelector from "@/components/DropDownSelector";
+import ApproveTokenButton from "@/components/buttons/ApproveTokenButton";
 import { useIsMounted } from "@/hooks/useIsMounted";
 import { Web3Button } from "@web3modal/react";
-import OpenTradeButton from "./buttons/OpenTradeButton";
-import LimitOrderButton from "./buttons/LimitOrderButton";
-import TradeDetails from "./TradeDetails";
+import OpenTradeButton from "@/components/buttons/OpenTradeButton";
+import LimitOrderButton from "@/components/buttons/LimitOrderButton";
+import TradeDetails from "@/components/TradeDetails";
 import TradingNumberInput from "@/components/TradingNumberInput";
 import { useWindowSize } from "@/hooks/useWindowSize";
 import { useNetwork } from "wagmi";
 
-//Material ui
-
-import Box from "@mui/material/Box";
-import TextField from "@mui/material/TextField";
+//MaterialUI
 import Slider from "@mui/material/Slider";
 
 //note we need to prefix the env variables with NEXT_PUBLIC to use them on the browser side
@@ -44,22 +41,14 @@ const tradingViewArray = ["ETHUSD", "BTCUSD", "XRPUSD", "MATICUSD", "BNBUSD"];
 function InputTradeValues(props) {
   const windowSize = useWindowSize();
   const [orderType, setOrderType] = useState(0);
-  const [orderArgs, setOrderArgs] = useState({
-    pairIndex: -1,
-    amountCollateral: 0,
-    leverage: 0,
-    orderType: -1,
-    pythData: ["something"],
-  });
-  const [prepareContract, setPrepareContract] = useState(false);
-  const [tradeModalCheck, setTradeModalCheck] = useState(false);
+
   const [limitOrder, setLimitOrder] = useState("false");
   const [limitPrice, setLimitPrice] = useState("");
 
   const { address, isConnected } = useAccount();
   const [tokenAllowance, setTokenAllowance] = useState();
-  const [collateralInput, setCollateralInput] = useState(0);
-  const [leverageAmount, setLeverageAmount] = useState();
+  const [collateralInput, setCollateralInput] = useState("");
+  const [leverageAmount, setLeverageAmount] = useState("");
 
   const [selectedAsset, setSelectedAsset] = useState();
   const [selectedAssetSymbol, setSelectedAssetSymbol] = useState("");
@@ -85,10 +74,6 @@ function InputTradeValues(props) {
 
   const toggleLimitOrder = (event) => {
     setLimitOrder(event.target.value);
-  };
-
-  const closeTradeModal = () => {
-    setTradeModalCheck(false);
   };
 
   const toggleAssetPairListHandler = () => {

@@ -1,5 +1,4 @@
 "use client";
-
 import React, { useState } from "react";
 import NotificationBar from "@/components/NotificationBar";
 import TradingViewWidget from "@/components/TradingViewWidget";
@@ -9,22 +8,29 @@ import InputTradeValues from "@/components/InputTradeValues";
 import OpenTrades from "@/components/OpenTrades";
 import OpenLimitOrders from "@/components/OpenLimitOrders";
 import TradingPoints from "@/components/TradingPoints";
-//context
+import Footer from "@/components/Footer";
 import {
+  //context
   useAssetList,
   useUpdateAssetList,
 } from "@/components/DropDownListContext";
 import { useHamburgerMenu } from "@/components/HamburgerMenuContext";
+import { useNetwork } from "wagmi";
+//for local environment
+import MOCKTradingSection from "@/components/mock-development/MOCKTradingSection";
 
-import Footer from "@/components/Footer";
+const localchainId = 31337;
 
 function TradingPage() {
+  //Controlling the asset changing of the tradingview widget
   const [tradingViewAsset, setTradingViewAsset] = useState("ETHUSD");
   const [tradingAssetIndex, setTradingAssetIndex] = useState(0);
 
   const dropdownListHidden = useAssetList();
   const toggleAssetListVisibility = useUpdateAssetList();
   const menuHidden = useHamburgerMenu();
+  //The chain Id will be used to determine if we are 1.Local Chain 2.TestNet or 3.MainNet for each case we have to interact differently
+  const { chain } = useNetwork();
 
   const tradingViewAssetChangeHandler = (assetSymbol, assetIndex) => {
     setTradingViewAsset(assetSymbol);
@@ -57,16 +63,24 @@ function TradingPage() {
             <TradingViewWidget assetSelect={tradingViewAsset} />
           </div>
         </div>
-        <InputTradeValues assetChange={tradingViewAssetChangeHandler} />
-        <div className="my-6 flex flex-center items-center justify-center border-4 border-gray-700 rounded-xl border-solid shadow-slate-700 mx-4 p-10 h-auto w-auto">
-          <OpenTrades />
-        </div>
-        <div className="flex flex-center items-center justify-center border-4 border-gray-700 rounded-xl border-solid shadow-slate-700 mx-4 p-10 h-auto w-auto">
-          <OpenLimitOrders />
-        </div>
-        <div className="m-4 flex justify-center">
-          <TradingPoints></TradingPoints>
-        </div>
+        {chain.id === localchainId ? (
+          <MOCKTradingSection
+            assetChange={tradingViewAssetChangeHandler}
+          ></MOCKTradingSection>
+        ) : (
+          <>
+            <InputTradeValues assetChange={tradingViewAssetChangeHandler} />
+            <div className="my-6 flex flex-center items-center justify-center border-4 border-gray-700 rounded-xl border-solid shadow-slate-700 mx-4 p-10 h-auto w-auto">
+              <OpenTrades />
+            </div>
+            <div className="flex flex-center items-center justify-center border-4 border-gray-700 rounded-xl border-solid shadow-slate-700 mx-4 p-10 h-auto w-auto">
+              <OpenLimitOrders />
+            </div>
+            <div className="m-4 flex justify-center">
+              <TradingPoints></TradingPoints>
+            </div>
+          </>
+        )}
       </div>
       <Footer />
     </div>

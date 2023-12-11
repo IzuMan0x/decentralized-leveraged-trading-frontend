@@ -1,9 +1,5 @@
 import { useState, useEffect } from "react";
-import {
-  HexString,
-  Price,
-  EvmPriceServiceConnection,
-} from "@pythnetwork/pyth-evm-js";
+import { EvmPriceServiceConnection } from "@pythnetwork/pyth-evm-js";
 
 const currencyFormat = new Intl.NumberFormat("en-US", {
   style: "currency",

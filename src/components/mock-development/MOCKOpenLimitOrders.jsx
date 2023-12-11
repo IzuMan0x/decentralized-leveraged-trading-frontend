@@ -1,27 +1,12 @@
 "use client";
-import React, { useEffect, useState } from "react";
-
-import {
-  useAccount,
-  usePrepareContractWrite,
-  useContractWrite,
-  useContractRead,
-  useContractReads,
-} from "wagmi";
-import { watchContractEvent } from "@wagmi/core";
+import React from "react";
+import { useAccount, useContractRead } from "wagmi";
 /* Contract abi location  **Note the ABI needs to be an array to be used with viem or wagmi*/
-import orderBookAbi from "../../assets/OrderBook.json";
-import mockPythContractAbi from "../../assets/mock-pyth-abi.json";
-import { abi as pythnetworkAbi } from "../../assets/pythnetwork-abi.json";
-import { parseEther, formatUnits } from "viem";
-import { PriceTicker } from "../PythPriceText";
-import MOCKCloseLimitOrder from "./MOCKCloseLimitOrder";
-import PositionPnl from "../PositionPnl";
+import orderBookAbi from "@/assets/OrderBook.json";
+import { formatUnits } from "viem";
+import { PriceTicker } from "@/components/PythPriceText";
+import MOCKCloseLimitOrder from "@/components/mock-development/MOCKCloseLimitOrder";
 import { useIsMounted } from "@/hooks/useIsMounted";
-import dotenv from "dotenv";
-
-const orderBookContractAddress =
-  process.env.NEXT_PUBLIC_ORDER_BOOK_CONTRACT_ADDRESS;
 
 const orderBook = {
   address: process.env.NEXT_PUBLIC_ORDER_BOOK_CONTRACT_ADDRESS,

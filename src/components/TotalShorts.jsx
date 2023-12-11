@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { useContractRead } from "wagmi";
 import { formatUnits } from "viem";
-import orderBookAbi from "../assets/OrderBook.json";
+import orderBookAbi from "@/assets/OrderBook.json";
 const orderBook = {
   address: process.env.NEXT_PUBLIC_ORDER_BOOK_CONTRACT_ADDRESS,
   abi: orderBookAbi.abi,

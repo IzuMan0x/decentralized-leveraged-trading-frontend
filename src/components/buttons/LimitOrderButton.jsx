@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import orderBookAbi from "../../assets/OrderBook.json";
+import orderBookAbi from "@/assets/OrderBook.json";
 import { parseEther, parseUnits } from "viem";
 import { prepareWriteContract, writeContract } from "@wagmi/core";
 

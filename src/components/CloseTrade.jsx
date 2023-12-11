@@ -1,7 +1,7 @@
-import TradeModal from "./TradeModal";
+import TradeModal from "@/components/TradeModal";
 import React, { useState } from "react";
-import orderBookAbi from "../assets/OrderBook.json";
-import pythNetworkAbi from "../assets/pythnetwork-abi.json";
+import orderBookAbi from "@/assets/OrderBook.json";
+import pythNetworkAbi from "@/assets/pythnetwork-abi.json";
 import { readContract, prepareWriteContract, writeContract } from "@wagmi/core";
 import { EvmPriceServiceConnection } from "@pythnetwork/pyth-evm-js";
 

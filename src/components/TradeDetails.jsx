@@ -1,6 +1,6 @@
 import React from "react";
-import { PriceTicker } from "./PythPriceText";
-import LiquidationPrice from "./LiquidationPrice";
+import { PriceTicker } from "@/components/PythPriceText";
+import LiquidationPrice from "@/components/LiquidationPrice";
 
 const openFeePercentage = 0.00075;
 

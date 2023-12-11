@@ -4,7 +4,7 @@ import {
   Price,
   EvmPriceServiceConnection,
 } from "@pythnetwork/pyth-evm-js";
-import { timeAgo } from "../utils/utils.jsx";
+import { timeAgo } from "@/utils/utils.jsx";
 
 const currencyFormat = new Intl.NumberFormat("en-US", {
   style: "currency",

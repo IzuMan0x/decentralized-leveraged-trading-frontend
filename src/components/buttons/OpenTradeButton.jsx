@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import orderBookAbi from "../../assets/OrderBook.json";
-import pythNetworkAbi from "../../assets/pythnetwork-abi.json";
+import orderBookAbi from "@/assets/OrderBook.json";
+import pythNetworkAbi from "@/assets/pythnetwork-abi.json";
 import { parseEther, parseUnits } from "viem";
 import { readContract, prepareWriteContract, writeContract } from "@wagmi/core";
 import { EvmPriceServiceConnection } from "@pythnetwork/pyth-evm-js";

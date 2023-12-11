@@ -205,3 +205,120 @@ const wagmiConfig = createConfig({
     </div>
   </div>
 </div>;
+
+//removed from the leaderboards page
+/* const filterStandings = async (dbRef)={
+
+  } */
+const standingsData = async () => {
+  const firebaseDb = await getDatabaseInstance();
+
+  const dbRef = ref(firebaseDb, "/standings");
+
+  const queryRef = query(dbRef, orderByChild("payouts"), limitToLast(5));
+
+  /*  return await onValue(
+      queryRef,
+      (snapshot) => {
+        const dataArray = [];
+
+        snapshot.forEach((childSnapshot) => {
+          console.log(childSnapshot.val());
+          dataArray.push(childSnapshot.val());
+        });
+      },
+      { onlyOnce: true }
+    ); */
+  const dataArray = [];
+  let counter = 0;
+  const numberOfResults = 5;
+  const standingsArray = (await get(queryRef)).forEach((snapshot) => {
+    //dataArray.push(snapshot.val());
+    if (snapshot.val() == undefined || counter >= numberOfResults) {
+      return true;
+    }
+    counter++;
+    const standingsObject = { [snapshot.key]: snapshot.val() };
+    dataArray.push(standingsObject);
+    //console.log("from the page: ", dataArray);
+    //console.log("parent snapshot is:", snapshot.val());
+    /*  snapshot.forEach((childSnapshot) => {
+        //console.log(childSnapshot.val());
+        //dataArray.push(childSnapshot.val());
+
+        if (counter >= numberOfResults) {
+          return true;
+        }
+      }); */
+  });
+
+  /*   console.log(
+      "From the page:!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! ",
+      standingsArray,
+      counter
+    ); */
+  if (standingsArray === true) {
+    return dataArray;
+  } else if (standingsArray === false) {
+    setTimeout(() => {
+      console.log("The timer has kicked in");
+      return dataArray;
+    }, 3000);
+    console.log("something went wrong");
+  }
+
+  // This will return all the data without filtering or ordering
+  /*  const snapshot = await get(child(dbRef, "/"));
+
+    if (snapshot.exists()) {
+      //console.log("from the leaderboards", snapshot.val());
+      return snapshot.val();
+    } else {
+      console.log("No data available");
+    } */
+};
+const onValueArray = [];
+const getLeaderBoardData = async () => {
+  const onValueDb = await getDatabaseInstance();
+  const onValueDbRef = ref(onValueDb, "/standings");
+  const onValueRef = query(
+    onValueDbRef,
+    orderByChild("payouts"),
+    limitToLast(5)
+  );
+  onValue(
+    onValueRef,
+    (snapshot) => {
+      snapshot.forEach((childSnapshot) => {
+        //console.log("the childrens snapshot is: ", childSnapshot.val());
+        onValueArray.push(childSnapshot.val());
+      });
+
+      console.log("the data from snapshot is: ", onValueArray);
+      return onValueArray;
+    },
+    { onlyOnce: true }
+  );
+  /* if (onValueArray?.length === 0) {
+      setTimeout(() => {
+        console.log("from the timeout function", onValueArray);
+        return onValueArray;
+      }, 5000);
+    } */
+};
+
+/*  const checkGetLeaderBoardData = async () => {
+    await getLeaderBoardData();
+    console.log("inside the new function");
+    if (onValueArray?.length === 0) {
+      const timer = setTimeout(() => {
+        console.log("from the timeout function", onValueArray);
+        return onValueArray;
+      }, 5000);
+    }
+  };
+
+  const standings = await standingsData(); */
+//console.log("the standings are: ", standings);
+
+//const standings = await checkGetLeaderBoardData();

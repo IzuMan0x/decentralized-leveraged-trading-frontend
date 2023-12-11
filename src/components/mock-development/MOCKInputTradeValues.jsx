@@ -1,38 +1,34 @@
 "use client";
 import React, { useState, useEffect } from "react";
 //import { EvmPriceServiceConnection } from "@pythnetwork/pyth-evm-js";
-import {
-  useAccount,
-  usePrepareContractWrite,
-  useContractWrite,
-  useContractRead,
-} from "wagmi";
+import { useAccount, useContractRead } from "wagmi";
 import { readContract } from "@wagmi/core";
-import { parseEther, formatUnits, parseUnits } from "viem";
+import { formatUnits } from "viem";
 /* Contract abi location  **Note the ABI needs to be an array to be used with viem or wagmi*/
 //production
-import orderBookAbi from "../../assets/OrderBook.json";
-import pythNetworkMockAbi from "../../assets/mock-pyth-abi.json";
-import erc20MockAbi from "../../assets/ERC20Mock-abi.json";
+import orderBookAbi from "@/assets/OrderBook.json";
 
-import { PriceTicker } from "../PythPriceText";
-import LongShortToggle from "../LongShortToggle";
-import TradeModal from "../TradeModal";
-import OpenTradeModal from "../OpenTradeModal";
-import DropDownSelector from "../DropDownSelector";
-import ApproveTokenButton from "../buttons/ApproveTokenButton";
+import erc20MockAbi from "@/assets/ERC20Mock-abi.json";
+
+import LongShortToggle from "@/components/LongShortToggle";
+
+import DropDownSelector from "@/components/DropDownSelector";
+
 import { useIsMounted } from "@/hooks/useIsMounted";
 import { Web3Button } from "@web3modal/react";
-import OpenTradeButton from "../buttons/OpenTradeButton";
-import TradeDetails from "../TradeDetails";
-import MarketLimitToggle from "../MarketLimitToggle";
-import LimitStrikePrice from "../LimitStrikePrice";
 
+import TradeDetails from "@/components/TradeDetails";
+import MarketLimitToggle from "@/components/MarketLimitToggle";
+
+import TradingNumberInput from "@/components/TradingNumberInput";
+import { motion, AnimatePresence } from "framer-motion";
+//MaterialUI
+import Slider from "@mui/material/Slider";
 //Testing
-import MOCKApproveTokenButton from "./MOCKApproveTokenButton";
-import MOCKMintTokenButton from "./MOCKMintTokenButton";
-import MOCKOpenTradeButton from "./MOCKOpenTradeButton";
-import MOCKLimitOrderButton from "./MOCKLimitOrderButton";
+import MOCKApproveTokenButton from "@/components/mock-development/MOCKApproveTokenButton";
+import MOCKMintTokenButton from "@/components/mock-development/MOCKMintTokenButton";
+import MOCKOpenTradeButton from "@/components/mock-development/MOCKOpenTradeButton";
+import MOCKLimitOrderButton from "@/components/mock-development/MOCKLimitOrderButton";
 
 //note we need to prefix the env variables with NEXT_PUBLIC to use them on the browser side
 const orderBook = {
@@ -40,39 +36,16 @@ const orderBook = {
   abi: orderBookAbi.abi,
 };
 //orderBookContractAddress
-const pythNetwork = {
-  abi: pythNetworkMockAbi.abi,
-  address: process.env.NEXT_PUBLIC_PYTH_CONTRACT_ADDRESS,
-};
-
-const testingBool = process.env.NEXT_PUBLIC_TESTING_BOOL;
-const collateralTokenAddress = process.env.NEXT_PUBLIC_COLLATERAL_TOKEN_ADDRESS;
 
 const tradingViewArray = ["ETHUSD", "BTCUSD", "XRPUSD", "MATICUSD", "BNBUSD"];
-const openFeePercentage = 0.00075;
-
-const currencyFormat = new Intl.NumberFormat("en-US", {
-  style: "currency",
-  currency: "USD",
-});
 
 //React component
 function InputTradeValues(props) {
   const [orderType, setOrderType] = useState(0);
-  const [orderArgs, setOrderArgs] = useState({
-    pairIndex: -1,
-    amountCollateral: 0,
-    leverage: 0,
-    orderType: -1,
-    pythData: ["something"],
-  });
-  const [prepareContract, setPrepareContract] = useState(false);
-  const [tradeModalCheck, setTradeModalCheck] = useState(false);
-  const [priceFeedUpdateData, setPriceFeedUpdateData] = useState([]);
   const { address, isConnected } = useAccount();
   const [tokenAllowance, setTokenAllowance] = useState();
-  const [collateralInput, setCollateralInput] = useState(0);
-  const [leverageAmount, setLeverageAmount] = useState();
+  const [collateralInput, setCollateralInput] = useState("");
+  const [leverageAmount, setLeverageAmount] = useState("");
   const [assetListHidden, setAssetListHidden] = useState(true);
   const [selectedAsset, setSelectedAsset] = useState();
   const [selectedAssetSymbol, setSelectedAssetSymbol] = useState("Nothing");
@@ -82,7 +55,7 @@ function InputTradeValues(props) {
   const [pythContractAddress, setPythContractAddress] = useState("");
 
   const [limitOrder, setLimitOrder] = useState("false");
-  const [limitPrice, setLimitPrice] = useState(0);
+  const [limitPrice, setLimitPrice] = useState();
 
   /* For local environment where we have to deploy mocks the address may change after each deployment so it makes sense to read the address from the main OrderBook contract so that only
   the OrderBook contract address will have to be updated in the .env file. For production environment the contract addresses will all be defiend in the env file for speed*/
@@ -159,10 +132,6 @@ function InputTradeValues(props) {
     write: approve,
   } = useContractWrite(approveTokenConfig); */
 
-  const closeTradeModal = () => {
-    setTradeModalCheck(false);
-  };
-
   const toggleAssetPairListHandler = () => {
     setAssetListHidden(() => !assetListHidden);
   };
@@ -183,107 +152,99 @@ function InputTradeValues(props) {
   const limitPriceChangeHandler = (newPrice) => {
     setLimitPrice(newPrice);
   };
+  const handleLeverageSlider = (event, newValue) => {
+    setLeverageAmount(newValue);
+  };
 
   return (
     <div>
-      {/* {marketOrderSuccess ? setModal(true) : ""} */}
-      {false && (
-        <TradeModal
-          mainMessage={"Trade Successfully Opened!!!"}
-          buttonMessage={"Well done"}
-        />
-      )}
-      {tradeModalCheck &&
-        false(
-          <OpenTradeModal
-            mainMessage={`Trade Parameters are:`}
-            buttonMessage={"Confirm Trade"}
-            orderArgs={orderArgs}
-            closeModal={closeTradeModal}
-          ></OpenTradeModal>
-        )}
       {mounted && (
         <form>
+          <div className="col-span-2 m-2">
+            <MOCKMintTokenButton tokenAddress={collateralTokenAddress} />
+          </div>
+          <div>
+            <label className="text-sm font-medium text-white">
+              Selected Trading Pair
+            </label>
+            <div className="col-span-2 flex w-full">
+              <DropDownSelector
+                toggleAssetPairList={toggleAssetPairListHandler}
+                selectedAsset={selectedAsset}
+                selectedAssetSymbol={selectedAssetSymbol}
+                selectedAssetHandler={selectedAssetHandler}
+              />
+            </div>
+          </div>
           <div className="grid gap-2 mb-1 md:grid-cols-2">
-            <div className="col-span-2 my-2">
-              <MarketLimitToggle
-                toggle={toggleLimitOrder}
-                limitOrder={limitOrder}
-              ></MarketLimitToggle>
-            </div>
-            <div className="col-span-2 my-2">
-              <LimitStrikePrice
-                limitPrice={limitPrice}
-                limitOrder={limitOrder}
-                limitPriceChangeHandler={limitPriceChangeHandler}
-              ></LimitStrikePrice>
-            </div>
-            <div className="col-span-2 m-2">
-              <MOCKMintTokenButton tokenAddress={collateralTokenAddress} />
-            </div>
-
             <div className="col-span-2 my-2">
               <LongShortToggle
                 toggle={toggleOrderTypeHandler}
                 orderType={orderType}
               ></LongShortToggle>
             </div>
+            <div className="col-span-2 my-">
+              <MarketLimitToggle
+                toggle={toggleLimitOrder}
+                limitOrder={limitOrder}
+              ></MarketLimitToggle>
+            </div>
+            <div className="flex">
+              <TradingNumberInput
+                changeHandler={setCollateralInput}
+                value={collateralInput}
+                name="collateral"
+                id="collateral-amount"
+                text="Enter Collateral"
+              ></TradingNumberInput>
+            </div>
 
-            <div>
-              <label className="text-sm font-medium text-white">
-                Selected Trading Pair
-              </label>
-              <div className="col-span-2 flex w-full">
-                <DropDownSelector
-                  toggleAssetPairList={toggleAssetPairListHandler}
-                  selectedAsset={selectedAsset}
-                  selectedAssetSymbol={selectedAssetSymbol}
-                  selectedAssetHandler={selectedAssetHandler}
+            <AnimatePresence>
+              {limitOrder == "true" && (
+                <motion.div
+                  key="limit-price"
+                  initial={{ opacity: 0, y: +30 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: +30 }}
+                  transition={{ duration: 0.5 }}
+                  className="col-span-2 my-2 h-24"
+                >
+                  <TradingNumberInput
+                    id="limit-price"
+                    value={limitPrice}
+                    name="limit-price"
+                    text="Enter Limit Price"
+                    changeHandler={limitPriceChangeHandler}
+                  ></TradingNumberInput>
+                </motion.div>
+              )}
+            </AnimatePresence>
+            <div className="col-span-2">
+              <div>
+                <label
+                  htmlFor="leverage_amount"
+                  className="block mb-2 text-sm font-medium text-white"
+                >
+                  Leverage Slider
+                </label>
+                <Slider
+                  aria-label="Small steps"
+                  defaultValue={1}
+                  onChange={handleLeverageSlider}
+                  step={1}
+                  min={1}
+                  max={150}
+                  marks={true}
+                  valueLabelDisplay="auto"
                 />
               </div>
-            </div>
-
-            <div>
-              <label
-                for="collateral_amount"
-                className="block mb-2 text-sm font-medium text-white"
-              >
-                Collateral Amount
-              </label>
-              <input
-                type="number"
-                min={10}
-                id="collateral_amount"
-                name="collateral"
-                className="flex -webkit-appearance:none -moz-appearance:textfield my-4 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                placeholder="150"
-                required
-                value={collateralInput}
-                onChange={(event) => setCollateralInput(event.target.value)}
-              />
-            </div>
-            <div>
-              <label
-                htmlFor="leverage_amount"
-                className="block mb-2 text-sm font-medium text-white"
-              >
-                Leverage Amount
-              </label>
-              <input
-                type="number"
-                id="leverage_amount"
-                min={1}
-                max={150}
+              <TradingNumberInput
+                changeHandler={setLeverageAmount}
                 value={leverageAmount}
-                onChange={(event) => {
-                  setLeverageAmount(event.target.value);
-                }}
-                pattern="\d{3}"
                 name="leverage"
-                className="bg-gray-50 border my-2 border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                placeholder="1 to 150"
-                required
-              />
+                id="leverage-amount"
+                text="Enter Leverage"
+              ></TradingNumberInput>
             </div>
           </div>
           {isConnected == false ? (
@@ -325,21 +286,3 @@ function InputTradeValues(props) {
 }
 
 export default InputTradeValues;
-
-{
-  /* <div className="flex text-white mx-10 border-solid border-4 border-white px-6 py-3 my-4">
-<h1 className="text-white flex-shrink">
-  Estimated Execution Price:
-  <PriceTicker
-    estimateTradeOpenPrice={selectedAsset}
-    orderType={orderType}
-  ></PriceTicker>
-</h1>
-<h1 className="text-red-500 flex shrink">
-  {`Opening Fee is: 
-  ${currencyFormat.format(
-    collateralInput * leverageAmount * openFeePercentage
-  )}`}
-</h1>
-</div> */
-}

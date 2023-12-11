@@ -1,9 +1,7 @@
 import React from "react";
-
-import LeaderBoardTable from "./LeaderBoardTable";
+import LeaderBoardTable from "@/app/leaderboard/LeaderBoardTable";
 
 function LeaderBoard({ standings }) {
-  console.log("from the leaderboard compoent", standings);
   return (
     <>
       <div>
@@ -12,9 +10,9 @@ function LeaderBoard({ standings }) {
         </h1>
       </div>
 
-      <div className="relative m-10 overflow-none rounded-lg">
+      <div className="relative m-10 overflow-auto rounded-lg">
         <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
-          <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+          <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400 rounded-lg">
             <tr>
               <th scope="col" className="px-6 py-3">
                 Address
@@ -29,12 +27,9 @@ function LeaderBoard({ standings }) {
             </tr>
           </thead>
 
-          {standings.map((val, index) => {
-            //console.log("made it here", key.totalTradeSize);
+          {standings.reverse().map((val, index) => {
             const keyArray = Object.keys(val);
             const userAddress = keyArray[0];
-
-            console.log("from the table list: ", val[userAddress].payouts);
             return (
               <LeaderBoardTable
                 key={userAddress}
@@ -51,10 +46,3 @@ function LeaderBoard({ standings }) {
 }
 
 export default LeaderBoard;
-
-/* leaderboardData.standings.map((user, index) => {
-    console.log(item);
-    return (
-      
-    );
-  }) */

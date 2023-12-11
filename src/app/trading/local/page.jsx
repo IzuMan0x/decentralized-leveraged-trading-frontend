@@ -1,9 +1,9 @@
 "use client";
-
+//Note we are working on removing this page and puting the switch logic into the main trading page
 import React, { useState } from "react";
 import NotificationBar from "@/components/NotificationBar";
-import TradingViewWidget from "../../../components/TradingViewWidget";
-import NavBar from "../../../components/NavBar";
+import TradingViewWidget from "@/components/TradingViewWidget";
+import NavBar from "@/components/NavBar";
 import InfoBar from "@/components/InfoBar";
 import InputTradeValues from "@/components/mock-development/MOCKInputTradeValues";
 import OpenTrades from "@/components/mock-development/MOCKOpenTrades";

@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { usePrepareContractWrite, useContractWrite } from "wagmi";
-import orderBookAbi from "../assets/OrderBook.json";
+import orderBookAbi from "@/assets/OrderBook.json";
 import { formatUnits } from "viem";
 const orderBook = {
   address: process.env.NEXT_PUBLIC_ORDER_BOOK_CONTRACT_ADDRESS,

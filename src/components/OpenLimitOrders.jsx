@@ -2,11 +2,11 @@
 import React from "react";
 import { useAccount, useContractRead } from "wagmi";
 /* Contract abi location  **Note the ABI needs to be an array to be used with viem or wagmi*/
-import orderBookAbi from "../assets/OrderBook.json";
+import orderBookAbi from "@/assets/OrderBook.json";
 import { formatUnits } from "viem";
-import { PriceTicker } from "./PythPriceText";
+import { PriceTicker } from "@/components/PythPriceText";
 import { useIsMounted } from "@/hooks/useIsMounted";
-import CloseLimitOrder from "./buttons/CloseLimitOrder";
+import CloseLimitOrder from "@/components/buttons/CloseLimitOrder";
 
 const orderBook = {
   address: process.env.NEXT_PUBLIC_ORDER_BOOK_CONTRACT_ADDRESS,
@@ -21,7 +21,6 @@ function OpenLimitOrders() {
   // Contract Reads//
   ///////////////////
 
-  const assetArray = [0, 1, 2, 3, 4];
   const assetSymbolArray = [
     "ETH/USD",
     "BTC/USD",

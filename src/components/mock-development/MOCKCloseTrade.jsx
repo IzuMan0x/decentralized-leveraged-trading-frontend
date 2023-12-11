@@ -1,7 +1,6 @@
-import TradeModal from "../TradeModal";
 import React, { useState } from "react";
-import orderBookAbi from "../../assets/OrderBook.json";
-import pythNetworkAbi from "../../assets/mock-pyth-abi.json";
+import orderBookAbi from "@/assets/OrderBook.json";
+import pythNetworkAbi from "@/assets/mock-pyth-abi.json";
 import { readContract, prepareWriteContract, writeContract } from "@wagmi/core";
 
 const orderBook = {
@@ -94,12 +93,6 @@ function CloseTrade(props) {
 
   return (
     <>
-      {false && (
-        <TradeModal
-          mainMessage={"Successfully closed a trade"}
-          buttonMessage={"Shut it down!!"}
-        ></TradeModal>
-      )}
       {closeOrderLoading ? (
         <div role="status">
           <svg

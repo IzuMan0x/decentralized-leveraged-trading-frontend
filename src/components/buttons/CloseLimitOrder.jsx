@@ -1,6 +1,5 @@
-import TradeModal from "../TradeModal";
 import React, { useState } from "react";
-import orderBookAbi from "../../assets/OrderBook.json";
+import orderBookAbi from "@/assets/OrderBook.json";
 import { prepareWriteContract, writeContract } from "@wagmi/core";
 
 const orderBook = {
@@ -47,12 +46,6 @@ function CloseLimitOrder(props) {
 
   return (
     <div>
-      {false && (
-        <TradeModal
-          mainMessage={"Successfully closed a trade"}
-          buttonMessage={"Shut it down!!"}
-        ></TradeModal>
-      )}
       {closingLimitOrder ? (
         <div role="status">
           <svg

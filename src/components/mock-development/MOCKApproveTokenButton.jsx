@@ -1,7 +1,7 @@
 import React from "react";
 import { usePrepareContractWrite, useContractWrite } from "wagmi";
-import orderBookAbi from "../../assets/OrderBook.json";
-import erc20Mock from "../../assets/ERC20Mock-abi.json";
+import orderBookAbi from "@/assets/OrderBook.json";
+import erc20Mock from "@/assets/ERC20Mock-abi.json";
 
 const orderBook = {
   address: process.env.NEXT_PUBLIC_ORDER_BOOK_CONTRACT_ADDRESS,

@@ -1,11 +1,8 @@
 import React, { useState } from "react";
-import orderBookAbi from "../../assets/OrderBook.json";
-import pythNetworkAbi from "../../assets/pythnetwork-abi.json";
-import { usePrepareContractWrite, useContractWrite } from "wagmi";
-import { parseEther, formatUnits, parseUnits } from "viem";
-
-import { readContract, prepareWriteContract, writeContract } from "@wagmi/core";
-import { EvmPriceServiceConnection } from "@pythnetwork/pyth-evm-js";
+import orderBookAbi from "@/assets/OrderBook.json";
+import pythNetworkAbi from "@/assets/pythnetwork-abi.json";
+import { parseEther, parseUnits } from "viem";
+import { prepareWriteContract, writeContract } from "@wagmi/core";
 
 const orderBook = {
   address: process.env.NEXT_PUBLIC_ORDER_BOOK_CONTRACT_ADDRESS,
