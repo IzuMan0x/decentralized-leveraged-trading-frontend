@@ -63,7 +63,7 @@ function TradingPage() {
             <TradingViewWidget assetSelect={tradingViewAsset} />
           </div>
         </div>
-        {chain.id === localchainId ? (
+        {chain?.id === localchainId ? (
           <MOCKTradingSection
             assetChange={tradingViewAssetChangeHandler}
           ></MOCKTradingSection>
